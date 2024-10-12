@@ -1,22 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 
 namespace Horse_Race_App.src.objects
 {
     internal class Horse
     {
-        public string horseName { get; set; }
-        public DateTime birthDate { get; set; } //when creating (yyyy, mm, dd)
-        public string horseID { get; set; }
+        private string horseName;
+        private DateTime birthDate; //when creating (yyyy, mm, dd)
+        private string horseID;
+
+        public string HorseName
+        {
+            get => horseName;
+            set
+            {
+                if (string.IsNullOrEmpty(horseName))
+                {
+                    throw new ArgumentException("Horse name cannot be empty or null.");
+                }
+
+                horseName = value;
+            }
+        }
+
+        public DateTime BirthDate
+        {
+            get => birthDate;
+            set
+            {
+                DateTime today = DateTime.Now;
+
+                int age = today.Year - value.Year;
+
+                if (value > today.AddYears(-age))
+                {
+                    age--;
+                }
+
+                if (age < 2 || age > 5)
+                {
+                    throw new ArgumentException("Horse must be between 2 and 5 years old.");
+                }
+
+                if (value > today)
+                {
+                    throw new ArgumentException("Invalid date of birth.");
+                }
+
+                birthDate = value;
+            }
+        }
+
+        public string HorseID
+        {
+            get => horseID;
+            set
+            {
+                if (validateID(value))
+                {
+                    horseID = value;
+                }
+                else
+                {
+                    throw new ArgumentException("The ID must match the pattern: 3 uppercase letters followed by 9 digits.");
+                }
+            }
+        }
 
         public Horse(string name, DateTime date, string horse) 
         {
             horseName = name;
             birthDate = date;
+            horseID = horse;
         }
 
         public bool validateID(string id)
