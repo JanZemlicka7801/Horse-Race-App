@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Horse_Race_App.src.objects
@@ -16,8 +17,17 @@ namespace Horse_Race_App.src.objects
         {
             horseName = name;
             birthDate = date;
-            horse = horseID;
-            // this is gonna be the pattern for the ID of a horse - @"\b[A-Z]{3}\d{9}\b"
+        }
+
+        public bool validateID(string id)
+        {
+            string pattern = @"\b[A-Z]{3}\d{9}\b";
+            return Regex.IsMatch(id, pattern);
+        }
+
+        public override string ToString()
+        {
+            return $"{horseName} (ID: {horseID}), Born: {birthDate.ToShortDateString()}";
         }
     }
 }
