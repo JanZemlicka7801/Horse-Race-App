@@ -13,11 +13,10 @@ namespace Horse_Race_App.src.objects
             get => horseName;
             set
             {
-                if (string.IsNullOrEmpty(horseName))
+                if (string.IsNullOrEmpty(value))
                 {
                     throw new ArgumentException("Horse name cannot be empty or null.");
                 }
-
                 horseName = value;
             }
         }
@@ -28,7 +27,6 @@ namespace Horse_Race_App.src.objects
             set
             {
                 DateTime today = DateTime.Now;
-
                 int age = today.Year - value.Year;
 
                 if (value > today.AddYears(-age))
