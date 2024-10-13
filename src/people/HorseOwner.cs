@@ -1,18 +1,26 @@
 ﻿using Horse_Race_App.src.objects;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Horse_Race_App.src.people
 {
     internal class HorseOwner
     {
-        public void EnterHorseInRace(Race race, string name, DateTime date, string horse)
+        public void EnterHorseInRace(Race race, string name, DateTime date, string horseID)
         {
-            race.AddHorse(new Horse(name, date, horse));
-            Console.WriteLine($"{name} has been entered in {race.Name}.");
+            try
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    throw new ArgumentException("Horse name cannot be empty.");
+                }
+
+                race.AddHorse(new Horse(name, date, horseID));
+                Console.WriteLine($"{name} has been entered in {race.Name}.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to enter horse into race: {ex.Message}");
+            }
         }
     }
 }
