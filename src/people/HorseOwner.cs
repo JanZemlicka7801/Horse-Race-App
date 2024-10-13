@@ -7,20 +7,9 @@ namespace Horse_Race_App.src.people
     {
         public void EnterHorseInRace(Race race, string name, DateTime date, string horseID)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(name))
-                {
-                    throw new ArgumentException("Horse name cannot be empty.");
-                }
-
-                race.AddHorse(new Horse(name, date, horseID));
-                Console.WriteLine($"{name} has been entered in {race.Name}.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to enter horse into race: {ex.Message}");
-            }
+            Horse horse = new Horse(name, date, horseID);
+            race.AddHorse(horse);
+            Console.WriteLine($"{horse.HorseName} has been entered in {race.Name}.");
         }
     }
 }
