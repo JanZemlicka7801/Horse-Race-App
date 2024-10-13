@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 
 namespace Horse_Race_App.src.objects
 {
-    internal class Race_Event
+    internal class RaceEvent
     {
         private string eventName;
         private string location;
         public List<Race> races { get; set; }
+
+        public RaceEvent(string eventName, string location)
+        {
+            EventName = eventName;
+            Location = location;
+            races = new List<Race>();
+        }
 
         public string EventName {
             get => eventName;
