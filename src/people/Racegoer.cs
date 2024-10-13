@@ -9,7 +9,7 @@ namespace Horse_Race_App.src.people
 {
     internal class Racegoer
     {
-        public void ViewUpcomingEvents(List<RaceEvent> events)
+        public static void ViewUpcomingEvents(List<RaceEvent> events)
         {
             Console.WriteLine("Upcoming Events:");
             foreach (var raceEvent in events)
