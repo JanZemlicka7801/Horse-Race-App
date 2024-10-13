@@ -53,14 +53,12 @@ namespace Horse_Race_App.src.objects
             get => horseID;
             set
             {
-                if (validateID(value))
+                string pattern = @"^[A-Z]{3}\d{9}$";
+                if (!Regex.IsMatch(value, pattern))
                 {
-                    horseID = value;
+                    throw new ArgumentException("Horse ID must follow the pattern: 3 uppercase letters followed by 9 digits.");
                 }
-                else
-                {
-                    throw new ArgumentException("The ID must match the pattern: 3 uppercase letters followed by 9 digits.");
-                }
+                horseID = value;
             }
         }
 
