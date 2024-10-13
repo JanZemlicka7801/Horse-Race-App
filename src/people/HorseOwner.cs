@@ -12,7 +12,7 @@ namespace Horse_Race_App.src.people
         public void EnterHorseInRace(Race race, string name, DateTime date, string horse)
         {
             race.AddHorse(new Horse(name, date, horse));
-            Console.WriteLine($"{horse.Name} has been entered in {race.Name}.");
+            Console.WriteLine($"{name} has been entered in {race.Name}.");
         }
     }
 }
