@@ -14,6 +14,15 @@ namespace Horse_Race_App.src.objects
         private int allowedHorses;
         private bool availability;
 
+        public Race(string HorseName, DateTime StartTime, int AllowedHorses) 
+        {
+            HorseName = name;
+            StartTime = startTime;
+            AllowedHorses = allowedHorses;
+            horses = new List<Horse>();
+            UpdateAvailability();
+        }
+
         public string Name
         {
             get => name;
@@ -55,6 +64,13 @@ namespace Horse_Race_App.src.objects
 
         public List<Horse> Horses => horses;
 
+        public bool Availability => availability;
+
+        private void UpdateAvailability()
+        {
+            availability = horses.Count < allowedHorses;
+        }
+
         public bool AddHorse(Horse horse)
         {
             if (IsRaceFull())
@@ -67,6 +83,7 @@ namespace Horse_Race_App.src.objects
                 throw new ArgumentException("The horse is already in the race.");
             }
 
+            UpdateAvailability();
             return AddHorse(horse);
         }
 
@@ -82,6 +99,7 @@ namespace Horse_Race_App.src.objects
                 throw new ArgumentException("The horse is not in the race.");
             }
 
+            UpdateAvailability();
             return RemoveHorse(horse);
         }
 
