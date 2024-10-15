@@ -1,9 +1,11 @@
-﻿namespace Horse_Race_App.src.objects
+﻿using Horse_Race_App.src.objects;
+
+namespace Horse_Race_App.objects
 {
     public class RaceEvents
     {
-        public string eventName;
-        public string location;
+        private string _eventName;
+        private string _location;
         public List<Race> Races { get; set; }
 
         public RaceEvents(string eventName, string location)
@@ -13,28 +15,28 @@
             Races = new List<Race>();
         }
 
-        public string EventName {
-            get => eventName;
+        private string EventName {
+            get => _eventName;
             set
             {
                 if (string.IsNullOrEmpty(value))
                 {
                     throw new ArgumentException("Event name cannot be empty or null.");
                 }
-                eventName = value;
+                _eventName = value;
             }
         }
 
-        public string Location
+        private string Location
         {
-            get => location;
+            get => _location;
             set
             {
                 if (string.IsNullOrEmpty(value))
                 {
                     throw new ArgumentException("Location name cannot be empty or null.");
                 }
-                location = value;
+                _location = value;
             }
         }
 

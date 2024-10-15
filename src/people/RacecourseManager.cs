@@ -1,31 +1,32 @@
-﻿using Horse_Race_App.src.objects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Horse_Race_App.objects;
+using Horse_Race_App.src.objects;
 
-namespace Horse_Race_App.src.people
+namespace Horse_Race_App.people
 {
     internal class RacecourseManager
     {
-        public List<RaceEvent> Events {  get; set; }
+        public List<RaceEvents> Events {  get; set; }
 
         public RacecourseManager()
         {
-            Events = new List<RaceEvent>();
+            Events = new List<RaceEvents>();
         }
 
-        public RaceEvent CreateRaceEvent(string eventName, string location)
+        public RaceEvents CreateRaceEvent(string eventName, string location)
         {
-            var raceEvent = new RaceEvent(eventName, location);
+            var raceEvent = new RaceEvents(eventName, location);
             Events.Add(raceEvent);
             return raceEvent;
         }
 
-        public void AddRaceToEvent(RaceEvent raceEvent, Race race)
+        public void AddRaceToEvent(RaceEvents raceEvent, Race race)
         {
             raceEvent.AddRace(race);
+        }
+
+        public void RemoveRaceFromEvent(RaceEvents raceEvent, Race race)
+        {
+            raceEvent.RemoveRace(race);
         }
 
         public override string ToString()
