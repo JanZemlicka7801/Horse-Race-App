@@ -71,14 +71,13 @@
             {
                 throw new ArgumentException("The race is already full.");
             }
-
             if (_horses.Contains(horse))
             {
                 throw new ArgumentException("The horse is already in the race.");
             }
-
+            _horses.Add(horse);
             UpdateAvailability();
-            return AddHorse(horse);
+            return true;
         }
 
         public bool RemoveHorse(Horse horse)
