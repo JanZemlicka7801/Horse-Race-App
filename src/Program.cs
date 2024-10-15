@@ -1,17 +1,23 @@
-﻿using Horse_Race_App.objects;
+﻿using System.Text.RegularExpressions;
+using Horse_Race_App.objects;
 using Horse_Race_App.people;
+using Horse_Race_App.utils;
 
-class Program
+namespace Horse_Race_App
+{
+    class Program
 {
     static void Main()
     {
         RacecourseManager manager = new RacecourseManager();
         HorseOwner owner = new HorseOwner();
         Racegoer visitor = new Racegoer();
-        List<RaceEvents> raceEvent = manager.Events; 
+
+        List<RaceEvents> raceEvents = FileUtils.RetrieveRaceEvents();
+        manager.Events.AddRange(raceEvents);
 
         Console.WriteLine("Hello and Welcome to a Zemlicka's Horse Derby. Please one the options of how you wanna interact\n" +
-                "as with the system.\n");
+                          "as with the system.\n");
         while (true)
         {
             Console.WriteLine(
@@ -25,54 +31,64 @@ class Program
             switch (answer)
             {
                 case "1":
-                    Horse horse = new Horse("",new DateTime(0000,00,00), "");
-
-                    if (raceEvent.Count == 0)
-                    {
-                        Console.WriteLine("There are no upcoming events to show.");
-                    }
-                    else
-                    {
-                        try
-                        {
-                            Console.WriteLine("Please select one event you want to assign your horse to.");
-                            Console.WriteLine("Please enter the name of the horse:");
-                            horse.HorseName = Console.ReadLine();
-
-                            Console.WriteLine("Please enter the birthdate of the horse (yyyy-mm-dd):");
-                            horse.BirthDate = DateTime.Parse(Console.ReadLine());
-
-                            Console.WriteLine("Please enter the horse ID (3 uppercase letters followed by 9 digits):");
-                            horse.HorseId = Console.ReadLine();
-
-
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"An error occurred: {ex.Message}");
-                            Console.WriteLine("Please try it again..");
-                        }
-                    }
-
                     
                     break;
 
                 case "2": //view upcoming races
-                    if (raceEvent.Count == 0)
+                    if (manager.Events.Count == 0)
                     {
                         Console.WriteLine("There are no upcoming events to show.");
                     }
                     else
                     {
-                        Racegoer.ViewUpcomingEvents(raceEvent);
+                        Racegoer.ViewUpcomingEvents(manager.Events);
                     }
                     break;
 
                 case "3":
+                        Console.WriteLine("1. Create a new race event.");
+                        Console.WriteLine("2. Add a race to an event.");
+                        string managerChoice = Console.ReadLine();
 
+                        if (managerChoice == "1")
+                        {
+                            Console.WriteLine("Enter event name:");
+                            string eventName = Console.ReadLine();
+                            Console.WriteLine("Enter race location:");
+                            string location = Console.ReadLine();
+                            manager.CreateRaceEvent(eventName, location);
+                            Console.WriteLine("The race event has been created.");
+                        }
+                        else if (managerChoice == "2")
+                        {
+                            if (manager.Events.Count == 0)
+                            {
+                                Console.WriteLine("There are no upcoming events to show. Please create one.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Select the race event you want to add race to:");
+                                for (int i = 0; i < manager.Events.Count; i++)
+                                {
+                                    Console.WriteLine($"{i + 1}. {manager.Events[i].EventName}");
+                                }
+                                int selectedRaceEvent = int.Parse(Console.ReadLine()) - 1;
+                                
+                                Console.WriteLine("Enter race name:");
+                                string raceName = Console.ReadLine();
+                                Console.WriteLine("Enter start time (yyyy-mm-dd):)");
+                                DateTime startTime = DateTime.Parse(Console.ReadLine());
+                                Console.WriteLine("Enter the maximum number of horse for the event:");
+                                int allowedHorses = int.Parse(Console.ReadLine());
+                                
+                                Race newRace = new Race(raceName, startTime, allowedHorses);
+                                manager.AddRaceToEvent(manager.Events[selectedRaceEvent], newRace);
+                                Console.WriteLine("The race event has been added.");
+                            }
+                        }
                     break;
-
                 case "4": // quits the program
+                    FileUtils.SaveRaceEvents(manager.Events);
                     Console.WriteLine("Exiting the program...");
                     return;
                 default:
@@ -81,4 +97,5 @@ class Program
             }
         }
     }
+}
 }
