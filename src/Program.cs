@@ -1,5 +1,5 @@
-﻿using Horse_Race_App.src.objects;
-using Horse_Race_App.src.people;
+﻿using Horse_Race_App.objects;
+using Horse_Race_App.people;
 
 class Program
 {
@@ -8,7 +8,7 @@ class Program
         RacecourseManager manager = new RacecourseManager();
         HorseOwner owner = new HorseOwner();
         Racegoer visitor = new Racegoer();
-        List<RaceEvent> raceEvent = manager.Events; 
+        List<RaceEvents> raceEvent = manager.Events; 
 
         Console.WriteLine("Hello and Welcome to a Zemlicka's Horse Derby. Please one the options of how you wanna interact\n" +
                 "as with the system.\n");
@@ -25,7 +25,36 @@ class Program
             switch (answer)
             {
                 case "1":
+                    Horse horse = new Horse("",new DateTime(0000,00,00), "");
 
+                    if (raceEvent.Count == 0)
+                    {
+                        Console.WriteLine("There are no upcoming events to show.");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            Console.WriteLine("Please select one event you want to assign your horse to.");
+                            Console.WriteLine("Please enter the name of the horse:");
+                            horse.HorseName = Console.ReadLine();
+
+                            Console.WriteLine("Please enter the birthdate of the horse (yyyy-mm-dd):");
+                            horse.BirthDate = DateTime.Parse(Console.ReadLine());
+
+                            Console.WriteLine("Please enter the horse ID (3 uppercase letters followed by 9 digits):");
+                            horse.HorseId = Console.ReadLine();
+
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"An error occurred: {ex.Message}");
+                            Console.WriteLine("Please try it again..");
+                        }
+                    }
+
+                    
                     break;
 
                 case "2": //view upcoming races
