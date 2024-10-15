@@ -1,74 +1,68 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Horse_Race_App.src.objects
+﻿namespace Horse_Race_App.objects
 {
     public class Race
     {
-        private string name { get; set; }
-        private DateTime startTime;
-        private List<Horse> horses;
-        private int allowedHorses;
-        private bool availability;
+        private string _name;
+        private DateTime _startTime;
+        private List<Horse> _horses;
+        private int _allowedHorses;
+        private bool _availability;
 
-        public Race(string HorseName, DateTime StartTime, int AllowedHorses) 
+        public Race(string horseName, DateTime startTime, int allowedHorses)
         {
-            HorseName = name;
-            StartTime = startTime;
-            AllowedHorses = allowedHorses;
-            horses = new List<Horse>();
+            _name = horseName;
+            _startTime = startTime;
+            _allowedHorses = allowedHorses;
+            _horses = new List<Horse>();
             UpdateAvailability();
         }
 
         public string Name
         {
-            get => name;
+            get => _name;
             set
             {
                 if (string.IsNullOrEmpty(value))
                 {
                     throw new ArgumentException("Race name cannot be empty.");
                 }
-                name = value;
+                _name = value;
             }
         }
 
         public DateTime StartTime
         {
-            get => startTime;
+            get => _startTime;
             set
             {
                 if (value < DateTime.Now)
                 {
                     throw new ArgumentException($"Start time {value} is not valid.");
                 }
-                startTime = value;
+                _startTime = value;
             }
         }
 
         public int AllowedHorses
         {
-            get => allowedHorses;
+            get => _allowedHorses;
             set
             {
-                if (allowedHorses < 3 && allowedHorses > 15)
+                if (_allowedHorses < 3 && _allowedHorses > 15)
                 {
                     throw new ArgumentException("The number of allowed horses needs to be between 3 and 15 inclusive.");
                 }
-                allowedHorses = value;
+                _allowedHorses = value;
             }
         }
 
-        public List<Horse> Horses => horses;
+        public List<Horse> Horses => _horses;
 
-        public bool Availability => availability;
+        public bool Availability => _availability;
 
         private void UpdateAvailability()
         {
-            availability = horses.Count < allowedHorses;
+            _availability = _horses.Count < _allowedHorses;
         }
 
         public bool AddHorse(Horse horse)
@@ -78,7 +72,7 @@ namespace Horse_Race_App.src.objects
                 throw new ArgumentException("The race is already full.");
             }
 
-            if (horses.Contains(horse))
+            if (_horses.Contains(horse))
             {
                 throw new ArgumentException("The horse is already in the race.");
             }
@@ -89,12 +83,12 @@ namespace Horse_Race_App.src.objects
 
         public bool RemoveHorse(Horse horse)
         {
-            if (!horses.Any())
+            if (!_horses.Any())
             {
                 throw new ArgumentException("The race is empty");
             }
 
-            if (!horses.Contains(horse))
+            if (!_horses.Contains(horse))
             {
                 throw new ArgumentException("The horse is not in the race.");
             }
@@ -105,18 +99,18 @@ namespace Horse_Race_App.src.objects
 
         public bool IsRaceFull()
         {
-            return horses.Count >= allowedHorses;
+            return _horses.Count >= _allowedHorses;
         }
 
         public bool IsRaceEmpty()
         {
-            return horses.Count == 0;
+            return _horses.Count == 0;
         }
 
         public override string ToString()
         {
-            string raceDetails = $"Race: {Name}, Start Time: {StartTime.ToShortTimeString()}, Allowed Horses: {allowedHorses}, Current Horses: {horses.Count}\nHorses:";
-            foreach (var horse in horses)
+            string raceDetails = $"Race: {_name}, Start Time: {StartTime.ToShortTimeString()}, Allowed Horses: {_allowedHorses}, Current Horses: {_horses.Count}\nHorses:";
+            foreach (var horse in _horses)
             {
                 raceDetails += $"\n  {horse}";
             }

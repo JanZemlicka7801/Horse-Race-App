@@ -1,6 +1,4 @@
-﻿using Horse_Race_App.src.objects;
-
-namespace Horse_Race_App.objects
+﻿namespace Horse_Race_App.objects
 {
     public class RaceEvents
     {
@@ -15,7 +13,7 @@ namespace Horse_Race_App.objects
             Races = new List<Race>();
         }
 
-        private string EventName {
+        public string EventName {
             get => _eventName;
             set
             {
@@ -27,7 +25,7 @@ namespace Horse_Race_App.objects
             }
         }
 
-        private string Location
+        public string Location
         {
             get => _location;
             set

@@ -1,5 +1,4 @@
 ﻿using Horse_Race_App.objects;
-using Horse_Race_App.src.objects;
 
 namespace Horse_Race_App.people
 {

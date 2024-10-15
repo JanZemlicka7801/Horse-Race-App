@@ -1,11 +1,6 @@
-﻿using Horse_Race_App.src.objects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Horse_Race_App.objects;
 
-namespace Horse_Race_App.src.people
+namespace Horse_Race_App.people
 {
     public class Racegoer
     {

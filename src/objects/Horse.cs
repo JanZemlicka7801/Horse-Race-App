@@ -1,29 +1,29 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Horse_Race_App.src.objects
+namespace Horse_Race_App.objects
 {
     public class Horse
     {
-        private string horseName;
-        private DateTime birthDate; //when creating (yyyy, mm, dd)
-        private string horseID;
+        private string _horseName;
+        private DateTime _birthDate; //when creating (yyyy, mm, dd)
+        private string _horseId;
 
         public string HorseName
         {
-            get => horseName;
+            get => _horseName;
             set
             {
                 if (string.IsNullOrEmpty(value))
                 {
                     throw new ArgumentException("Horse name cannot be empty or null.");
                 }
-                horseName = value;
+                _horseName = value;
             }
         }
 
         public DateTime BirthDate
         {
-            get => birthDate;
+            get => _birthDate;
             set
             {
                 DateTime today = DateTime.Now;
@@ -44,13 +44,13 @@ namespace Horse_Race_App.src.objects
                     throw new ArgumentException("Invalid date of birth.");
                 }
 
-                birthDate = value;
+                _birthDate = value;
             }
         }
 
-        public string HorseID
+        public string HorseId
         {
-            get => horseID;
+            get => _horseId;
             set
             {
                 string pattern = @"^[A-Z]{3}\d{9}$";
@@ -58,18 +58,18 @@ namespace Horse_Race_App.src.objects
                 {
                     throw new ArgumentException("Horse ID must follow the pattern: 3 uppercase letters followed by 9 digits.");
                 }
-                horseID = value;
+                _horseId = value;
             }
         }
 
         public Horse(string name, DateTime date, string horse) 
         {
-            horseName = name;
-            birthDate = date;
-            horseID = horse;
+            _horseName = name;
+            _birthDate = date;
+            _horseId = horse;
         }
 
-        public bool validateID(string id)
+        public bool ValidateId(string id)
         {
             string pattern = @"\b[A-Z]{3}\d{9}\b";
             return Regex.IsMatch(id, pattern);
@@ -77,7 +77,7 @@ namespace Horse_Race_App.src.objects
 
         public override string ToString()
         {
-            return $"{horseName} (ID: {horseID}), Born: {birthDate.ToShortDateString()}";
+            return $"{_horseName} (ID: {_horseId}), Born: {_birthDate.ToShortDateString()}";
         }
     }
 }
