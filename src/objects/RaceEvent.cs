@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Horse_Race_App.src.objects
+﻿namespace Horse_Race_App.src.objects
 {
-    internal class RaceEvent
+    public class RaceEvents
     {
-        private string eventName;
-        private string location;
-        public List<Race> races { get; set; }
+        public string eventName;
+        public string location;
+        public List<Race> Races { get; set; }
 
-        public RaceEvent(string eventName, string location)
+        public RaceEvents(string eventName, string location)
         {
             EventName = eventName;
             Location = location;
-            races = new List<Race>();
+            Races = new List<Race>();
         }
 
         public string EventName {
@@ -46,18 +40,18 @@ namespace Horse_Race_App.src.objects
 
         public void AddRace(Race race)
         {
-            races.Add(race);
+            Races.Add(race);
         }
 
         public void RemoveRace(Race race)
         {
-            races.Remove(race);
+            Races.Remove(race);
         }
 
         public override string ToString()
         {
             string eventDetails = $"Event: {EventName}\nLocation: {Location}\nRaces:";
-            foreach (var race in races)
+            foreach (var race in Races)
             {
                 eventDetails += $"\n{race}\n";
             }
