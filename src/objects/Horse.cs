@@ -69,12 +69,6 @@ namespace Horse_Race_App.objects
             _horseId = horse;
         }
 
-        public bool ValidateId(string id)
-        {
-            string pattern = @"\b[A-Z]{3}\d{9}\b";
-            return Regex.IsMatch(id, pattern);
-        }
-
         public override string ToString()
         {
             return $"{_horseName} (ID: {_horseId}), Born: {_birthDate.ToShortDateString()}";
