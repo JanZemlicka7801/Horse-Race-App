@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Horse_Race_App.src.objects
 {
-    internal class Race
+    public class Race
     {
         private string name { get; set; }
         private DateTime startTime;

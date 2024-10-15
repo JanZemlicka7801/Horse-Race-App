@@ -2,7 +2,7 @@
 
 namespace Horse_Race_App.src.objects
 {
-    internal class Horse
+    public class Horse
     {
         private string horseName;
         private DateTime birthDate; //when creating (yyyy, mm, dd)
