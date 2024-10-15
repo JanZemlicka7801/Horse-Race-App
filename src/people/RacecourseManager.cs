@@ -13,6 +13,14 @@ namespace Horse_Race_App.people
 
         public RaceEvents CreateRaceEvent(string eventName, string location)
         {
+            foreach (var RaceEvent in Events)
+            {
+                if (RaceEvent.EventName.Equals(eventName, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new ArgumentException("Event name already exists");
+                }
+            }
+            
             var raceEvent = new RaceEvents(eventName, location);
             Events.Add(raceEvent);
             return raceEvent;
