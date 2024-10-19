@@ -49,26 +49,26 @@ namespace Horse_Race_App.utils
             return events;
         }
 
-        public static void SaveRaceEvents(List<RaceEvents> events)
+        public static void writeEvents(List<RaceEvents> events)
         {
-            var lines = new List<string>();
-
-            foreach (var raceEvent in events)
+            using (StreamWriter writer = new StreamWriter(FilePath))
             {
-                lines.Add($"Event: {raceEvent.EventName}, {raceEvent.Location}");
-
-                foreach (var race in raceEvent.Races)
+                foreach (var evt in events)
                 {
-                    lines.Add($"Race: {race.Name}, {race.StartTime}, {race.AllowedHorses}");
-
-                    foreach (var horse in race.Horses)
+                    foreach (var race in evt.Races)
                     {
-                        lines.Add($"Horse: {horse.HorseName}, {horse.BirthDate.ToShortDateString()}, {horse.HorseId}");
+                        if (race.Horses.Count < 3 || race.Horses.Count > 15)
+                        {
+                            throw new Exception($"Race '{race.Name}' in event '{evt.EventName}' must have between 3 and 15 horses. Current count: {race.Horses.Count}");
+                        }
+
+                        string horses = string.Join(", ", race.Horses.Select(h =>
+                            $"{{id:{h.HorseId}, name:'{h.HorseName}', age:{h.BirthDate}}}"));
+
+                        writer.WriteLine($"event: \"{evt.EventName}\", race: \"{race.Name}\", horses: \"[{horses}]\"");
                     }
                 }
             }
-
-            File.WriteAllLines(FilePath, lines);
         }
     }
 }
