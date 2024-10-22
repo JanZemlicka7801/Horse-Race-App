@@ -4,74 +4,64 @@ namespace Horse_Race_App.objects
 {
     public class Horse
     {
-        private string _horseName;
-        private DateTime _birthDate; //when creating (yyyy, mm, dd)
-        private string _horseId;
+        public string HorseName { get; set; }
+        public DateTime BirthDate { get; set; }
+        public string HorseId { get; set; }
 
-        public string HorseName
+        public Horse(string name, DateTime birthDate, string horseId)
         {
-            get => _horseName;
-            set
+            if (!ValidateHorseName(name))
             {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new ArgumentException("Horse name cannot be empty or null.");
-                }
-                _horseName = value;
+                Console.WriteLine("Invalid horse name. It cannot be empty or null.");
+                return;
             }
+
+            if (!ValidateHorseAge(birthDate))
+            {
+                Console.WriteLine("Invalid horse birth date. Age must be between 2 and 5 years.");
+                return;
+            }
+
+            if (!ValidateHorseId(horseId))
+            {
+                Console.WriteLine("Invalid Horse ID. It must follow the pattern: 3 uppercase letters followed by 9 digits.");
+                return;
+            }
+
+            HorseName = name;
+            BirthDate = birthDate;
+            HorseId = horseId;
         }
 
-        public DateTime BirthDate
+        // validating the name of the horse
+        private bool ValidateHorseName(string name)
         {
-            get => _birthDate;
-            set
-            {
-                DateTime today = DateTime.Now;
-                int age = today.Year - value.Year;
-
-                if (value > today.AddYears(-age))
-                {
-                    age--;
-                }
-
-                if (age < 2 || age > 5)
-                {
-                    throw new ArgumentException("Horse must be between 2 and 5 years old.");
-                }
-
-                if (value > today)
-                {
-                    throw new ArgumentException("Invalid date of birth.");
-                }
-
-                _birthDate = value;
-            }
+            return !string.IsNullOrEmpty(name);
         }
 
-        public string HorseId
+        // validating the age of the horse
+        private bool ValidateHorseAge(DateTime birthDate)
         {
-            get => _horseId;
-            set
-            {
-                string pattern = @"^[A-Z]{3}\d{9}$";
-                if (!Regex.IsMatch(value, pattern))
-                {
-                    throw new ArgumentException("Horse ID must follow the pattern: 3 uppercase letters followed by 9 digits.");
-                }
-                _horseId = value;
-            }
+            //get the current date
+            DateTime today = DateTime.Now;
+            //substract the current year with current year
+            int age = today.Year - birthDate.Year;
+            //if the birthday is later this year then -1 year
+            if (birthDate > today.AddYears(-age)) age--; 
+            //validating the return
+            return age is >= 2 and <= 5;
         }
 
-        public Horse(string name, DateTime date, string horse) 
+        // validating ID
+        private bool ValidateHorseId(string horseId)
         {
-            _horseName = name;
-            _birthDate = date;
-            _horseId = horse;
+            string pattern = @"^[A-Z]{3}\d{9}$";
+            return Regex.IsMatch(horseId, pattern);
         }
 
         public override string ToString()
         {
-            return $"{_horseName} (ID: {_horseId}), Born: {_birthDate.ToShortDateString()}";
+            return $"{HorseName} (ID: {HorseId}), Born: {BirthDate.ToShortDateString()}";
         }
     }
 }
