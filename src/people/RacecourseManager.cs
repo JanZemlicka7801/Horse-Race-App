@@ -6,44 +6,41 @@ namespace Horse_Race_App.people
     {
         public List<RaceEvents> Events {  get; set; }
 
+        //main list that holds all race events
         public RacecourseManager()
         {
             Events = new List<RaceEvents>();
         }
 
-        public RaceEvents CreateRaceEvent(string eventName, string location)
+        //function for creating a race event and log it inside the manager
+        public RaceEvents CreateRaceEvent(string eventName, string location, int numberOfRaces)
         {
-            foreach (var RaceEvent in Events)
-            {
-                if (RaceEvent.EventName.Equals(eventName, StringComparison.OrdinalIgnoreCase))
-                {
-                    throw new ArgumentException("Event name already exists");
-                }
-            }
-            
-            var raceEvent = new RaceEvents(eventName, location);
-            Events.Add(raceEvent);
-            return raceEvent;
-        }
-
-        public void AddRaceToEvent(RaceEvents raceEvent, Race race)
-        {
-            raceEvent.AddRace(race);
-        }
-
-        public void RemoveRaceFromEvent(RaceEvents raceEvent, Race race)
-        {
-            raceEvent.RemoveRace(race);
-        }
-
-        public override string ToString()
-        {
-            string managerDetails = "Racecourse Manager Events:";
             foreach (var raceEvent in Events)
             {
-                managerDetails += $"\n{raceEvent}";
+                if (raceEvent.EventName.Equals(eventName))
+                {
+                    Console.WriteLine($"Event {eventName} is already in the system.");
+                }
             }
-            return managerDetails;
+
+            var RaceEvent = new RaceEvents(eventName, location, numberOfRaces);
+            Events.Add(RaceEvent);
+            return RaceEvent;
+        }
+
+        //function for deleting the race event from the manager
+        public bool DeleteRaceEvent(string eventName)
+        {
+            foreach (var raceEvent in Events)
+            {
+                if (raceEvent.EventName.Equals(eventName))
+                {
+                    Events.Remove(raceEvent);
+                    return true;
+                }
+            }
+            Console.WriteLine($"Event {eventName} is not in the system. In this case, the race event won't be deleted.");
+            return false;
         }
     }
 }
