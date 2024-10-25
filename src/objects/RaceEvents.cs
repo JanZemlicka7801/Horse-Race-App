@@ -2,20 +2,33 @@
 {
     public class RaceEvents
     {
-        private string EventName { get; set; }
-        private string Location { get; set; }
+        public string EventName { get; set; }
+        public string Location { get; set; }
         public List<Race> Races { get; set; }
+        public int NumberOfRaces { get; set; }
 
-        public RaceEvents(string eventName, string location)
+        public RaceEvents(string eventName, string location, int numberOfRaces)
         {
-            if (!ValidateEventName(eventName) || !ValidateEventLocation(location))
+            if (!ValidateEventName(eventName) || !ValidateEventLocation(location) || !ValidateNumberOfRaces(numberOfRaces))
             {
                 Console.WriteLine("Invalid element was entered.");
                 return;
             }
+            NumberOfRaces = numberOfRaces;
             EventName = eventName;
             Location = location;
             Races = new List<Race>();
+        }
+        
+        //validates number of races
+        public bool ValidateNumberOfRaces(int number)
+        {
+            if (number < 1 || number > 30)
+            {
+                Console.WriteLine("Invalid number was entered. The possible number can be between 1 and 30.");
+                return false;
+            }
+            return true;
         }
         
         //validates event name
@@ -41,10 +54,22 @@
             return true;
         }
         
+        //function for checking if the event is full
+        private bool IsFullEvent()
+        {
+            return Races.Count >= NumberOfRaces;
+        }
+        
+        //checking if the event doesn't have races
+        private bool IsEmptyEvent()
+        {
+            return Races.Count == 0;
+        }
+        
         //adds a race to an event
         public bool AddRace(Race race)
         {
-            if (Races.Contains(race))
+            if (Races.Contains(race) || IsFullEvent())
             {
                 Console.WriteLine("Error has occured when adding a race...");
                 return false;
@@ -55,9 +80,9 @@
         //removes race from the list of races
         public bool RemoveRace(Race race)
         {
-            if (!Races.Contains(race))
+            if (!Races.Contains(race) || IsEmptyEvent())
             {
-                Console.WriteLine("Race not found in the event...");
+                Console.WriteLine("There is an error in removing a race...");
                 return false;
             }
             return Races.Remove(race);
