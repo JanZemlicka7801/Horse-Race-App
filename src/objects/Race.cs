@@ -56,22 +56,23 @@
         public bool AddHorse(Horse horse)
         {
             if (Horses.Contains(horse)){ Console.WriteLine("Horse is already added."); return false;}
-            if (RaceIsFull()){ Console.WriteLine("The race is already full."); return false;}
+            if (!IsAvailabile()){ Console.WriteLine("The race is already full."); return false;}
             Horses.Add(horse);
             return true;
         }
 
-        public bool RaceIsFull()
+        private bool RaceIsFull()
         {
             return Horses.Count >= AllowedHorses;
         }
         
-        public bool RaceIsEmpty()
+        private bool RaceIsEmpty()
         {
             return Horses.Count == 0;
         }
 
-        public bool IsAvailabile()
+        //is not important could be deleted
+        private bool IsAvailabile()
         {
             return !RaceIsFull();
         }
