@@ -61,7 +61,7 @@
         }
         
         //checking if the event doesn't have races
-        private bool IsEmptyEvent()
+        public bool IsEmptyEvent()
         {
             return Races.Count == 0;
         }

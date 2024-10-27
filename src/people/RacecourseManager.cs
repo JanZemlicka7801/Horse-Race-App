@@ -124,6 +124,45 @@ namespace Horse_Race_App.people
         }
         
         //function for deleting races from the event
+        public void RemoveRaces(string eventName)
+        {
+            //find the race event
+            var raceEvent = Events.FirstOrDefault(e => e.EventName.Equals(eventName, StringComparison.OrdinalIgnoreCase));
+            if (raceEvent == null)
+            {
+                Console.WriteLine($"Event '{eventName}' not found.");
+                return;
+            }
+
+            //check if there is anything to delete
+            if (raceEvent.IsEmptyEvent())
+            {
+                Console.WriteLine($"No races available to delete in event '{eventName}'.");
+                return;
+            }
+            
+            //display possible deletions
+            Console.WriteLine("Please write numbers of races that you want to delete.");
+            string input = Console.ReadLine();
+            string[] numbersSplit = input.Split(',');
+            
+            //try to delete races
+            foreach (var selection in numbersSplit)
+            {
+                try
+                {
+                    int number = Convert.ToInt32(selection);
+                    Race raceToRemove = raceEvent.Races[number];
+                    raceEvent.RemoveRace(raceToRemove);
+                    Console.WriteLine($"Race '{raceToRemove.Name}' has been deleted.");
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("Invalid input... Selected option cannot be deleted.");
+                }
+            }
+        }
+        
         //function for adding whole list of horses for each race
         //function for adding horse manually
     }
