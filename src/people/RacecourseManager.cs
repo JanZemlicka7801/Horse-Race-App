@@ -163,6 +163,21 @@ namespace Horse_Race_App.people
             }
         }
         
+        private Race FindRaceByName(string raceName)
+        {
+            foreach (var raceEvent in Events)
+            {
+                foreach (var race in raceEvent.Races)
+                {
+                    if (race.Name.Equals(raceName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return race;
+                    }
+                }
+            }
+            return null;
+        }
+        
         //function for adding whole list of horses for each race
         //function for adding horse manually
     }
