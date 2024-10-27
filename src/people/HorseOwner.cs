@@ -6,7 +6,12 @@ namespace Horse_Race_App.people
     {
         public void EnterHorseInRace(Race race, string name, DateTime date, string horseId)
         {
-            Horse horse = new Horse(name, date, horseId);
+            Horse horse = new Horse("", DateTime.Today, "");
+            if (!horse.ValidateHorseId(horseId) || !horse.ValidateHorseAge(date) || !horse.ValidateHorseName(name))
+            {
+                Console.WriteLine("Invalid Horses properties!");
+                return;
+            }
             Console.WriteLine(race.AddHorse(horse)
                 ? $"{horse.HorseName} has been entered in {race.Name}."
                 : "Horse has not been entered.");

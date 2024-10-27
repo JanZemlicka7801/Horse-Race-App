@@ -34,13 +34,13 @@ namespace Horse_Race_App.objects
         }
 
         // validating the name of the horse
-        private bool ValidateHorseName(string name)
+        public bool ValidateHorseName(string name)
         {
             return !string.IsNullOrEmpty(name);
         }
 
         // validating the age of the horse
-        private bool ValidateHorseAge(DateTime birthDate)
+        public bool ValidateHorseAge(DateTime birthDate)
         {
             //get the current date
             DateTime today = DateTime.Now;
@@ -53,7 +53,7 @@ namespace Horse_Race_App.objects
         }
 
         // validating ID
-        private bool ValidateHorseId(string horseId)
+        public bool ValidateHorseId(string horseId)
         {
             string pattern = @"^[A-Z]{3}\d{9}$";
             return Regex.IsMatch(horseId, pattern);
