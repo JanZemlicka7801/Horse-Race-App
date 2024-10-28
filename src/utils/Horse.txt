@@ -1,0 +1,1 @@
+﻿HorseId:ABC123456789,BirthDate:10/28/2020,HorseName:Lojza

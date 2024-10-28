@@ -1,0 +1,1 @@
+﻿Name:Poligon,StartTime:9:00,HorsesIDs(ABC123456789),AllowedHorses:5
