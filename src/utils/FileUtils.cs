@@ -1,74 +1,50 @@
 ﻿using Horse_Race_App.objects;
+using Horse_Race_App.people;
 
 namespace Horse_Race_App.utils
 {
     public static class FileUtils
     {
-        private const string FilePath = "data.txt";
-
-        public static List<RaceEvents> RetrieveRaceEvents()
+        public static List<Horse> ReadHorses()
         {
-            var events = new List<RaceEvents>();
+            var horses = new List<Horse>();
 
-            if (!File.Exists(FilePath))
-                return events;
-
-            var lines = File.ReadAllLines(FilePath);
-            RaceEvents currentEvent = null;
-            Race currentRace = null;
-
-            foreach (var line in lines)
+            foreach (var line in File.ReadLines("C:\\Users\\lomze\\OneDrive - Dundalk Institute of Technology\\DkIT\\Web Frameworks\\Lab work\\Horse Race App\\src\\utils\\Horse.txt"))
             {
-                if (line.StartsWith("Event:"))
-                {
-                    var details = line.Replace("Event:", "").Split(',');
-                    var eventName = details[0].Trim();
-                    var location = details[1].Trim();
-                    currentEvent = new RaceEvents(eventName, location);
-                    events.Add(currentEvent);
-                }
-                else if (line.StartsWith("Race:"))
-                {
-                    var details = line.Replace("Race:", "").Split(',');
-                    var raceName = details[0].Trim();
-                    var startTime = DateTime.Parse(details[1].Trim());
-                    var allowedHorses = int.Parse(details[2].Trim());
-                    currentRace = new Race(raceName, startTime, allowedHorses);
-                    currentEvent?.Races.Add(currentRace);
-                }
-                else if (line.StartsWith("Horse:"))
-                {
-                    var details = line.Replace("Horse:", "").Split(',');
-                    var horseName = details[0].Trim();
-                    var birthDate = DateTime.Parse(details[1].Trim());
-                    var horseId = details[2].Trim();
-                    currentRace?.AddHorse(new Horse(horseName, birthDate, horseId));
-                }
+                //no validation as the program will write all information inside the file
+                var parts = line.Split(',');
+                string horseId = parts[0].Split(':')[1];
+                DateTime birthDate = DateTime.Parse(parts[1].Split(':')[1]);
+                string horseName = parts[2].Split(':')[1];
+                horses.Add(new Horse(horseName, birthDate, horseId));
             }
-
-            return events;
+            
+            return horses;
         }
 
-        public static void writeEvents(List<RaceEvents> events)
+        public static List<Race> ReadRaces()
         {
-            using (StreamWriter writer = new StreamWriter(FilePath))
+            var races = new List<Race>();
+            foreach (var line in File.ReadLines("C:\\Users\\lomze\\OneDrive - Dundalk Institute of Technology\\DkIT\\Web Frameworks\\Lab work\\Horse Race App\\src\\utils\\Race.txt"))
             {
-                foreach (var evt in events)
+                var parts = line.Split(',');
+                string name = parts[0].Split(':')[1];
+                TimeSpan startTime = TimeSpan.Parse(parts[1].Split(':')[1]);
+                var horsesIDs = parts[2].Split('(')[1].TrimEnd(')').Split(',').ToList();
+                int allowedHorses = int.Parse(parts[3].Split(':')[1]);
+                List<Horse> listOfHorses = ReadHorses();
+                foreach (var horse in listOfHorses)
                 {
-                    foreach (var race in evt.Races)
+                    if (!horsesIDs.Contains(horse.HorseId))
                     {
-                        if (race.Horses.Count < 3 || race.Horses.Count > 15)
-                        {
-                            throw new Exception($"Race '{race.Name}' in event '{evt.EventName}' must have between 3 and 15 horses. Current count: {race.Horses.Count}");
-                        }
-
-                        string horses = string.Join(", ", race.Horses.Select(h =>
-                            $"{{id:{h.HorseId}, name:'{h.HorseName}', age:{h.BirthDate}}}"));
-
-                        writer.WriteLine($"event: \"{evt.EventName}\", race: \"{race.Name}\", horses: \"[{horses}]\"");
+                        listOfHorses.Remove(horse);
                     }
                 }
+                races.Add(new Race(name, startTime, listOfHorses, allowedHorses));
             }
+            return races;
         }
+        
+        
     }
 }
