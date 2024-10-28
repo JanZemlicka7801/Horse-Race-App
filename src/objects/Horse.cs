@@ -1,9 +1,11 @@
 ﻿using System.Text.RegularExpressions;
+using Horse_Race_App.utils;
 
 namespace Horse_Race_App.objects
 {
     public class Horse
     {
+        public List<Horse> listOfSavedHorses = FileUtils.ReadHorses();
         public string HorseName { get; set; }
         public DateTime BirthDate { get; set; }
         public string HorseId { get; set; }
@@ -36,6 +38,7 @@ namespace Horse_Race_App.objects
         // validating the name of the horse
         public bool ValidateHorseName(string name)
         {
+            //Names can be repeated as in the world are many other human names aswell
             return !string.IsNullOrEmpty(name);
         }
 
@@ -55,6 +58,15 @@ namespace Horse_Race_App.objects
         // validating ID
         public bool ValidateHorseId(string horseId)
         {
+            //check if the horse is already saved or not
+            foreach (var horse in listOfSavedHorses)
+            {
+                if (horse.HorseId.Equals(horseId))
+                {
+                    Console.WriteLine("Your horse is already saved.");
+                    return false;
+                }
+            }
             string pattern = @"^[A-Z]{3}\d{9}$";
             return Regex.IsMatch(horseId, pattern);
         }
