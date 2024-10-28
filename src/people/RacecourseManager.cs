@@ -31,23 +31,29 @@ namespace Horse_Race_App.people
         //function for deleting the race event from the manager
         public bool DeleteRaceEvent(string eventName)
         {
-            foreach (var raceEvent in Events)
-            {
-                if (raceEvent.EventName.Equals(eventName))
-                {
-                    Events.Remove(raceEvent);
-                    return true;
-                }
-            }
+            RaceEvents raceToDelete = FindRaceEventByName(eventName);
+            Events.Remove(raceToDelete);
             Console.WriteLine($"Event {eventName} is not in the system. In this case, the race event won't be deleted.");
             return false;
+        }
+        
+        private RaceEvents FindRaceEventByName(string eventName)
+        {
+            foreach (var raceEvent in Events)
+            {
+                    if (raceEvent.EventName.Equals(eventName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return raceEvent;
+                    }
+            }
+            return null;
         }
         
         //function for adding races to the event
         public void AddRaces(string eventName)
         {
             //loop through events to find the right one using case ignorance
-            var raceEvent = Events.FirstOrDefault(e => e.EventName.Equals(eventName, StringComparison.OrdinalIgnoreCase));
+            var raceEvent = FindRaceEventByName(eventName);
             if (raceEvent == null)
             {
                 Console.WriteLine($"Event '{eventName}' not found.");
@@ -179,6 +185,68 @@ namespace Horse_Race_App.people
         }
         
         //function for adding whole list of horses for each race
+        public void addHorsesFromFile(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine("The specified file does not exist.");
+                return;
+            }
+
+            Race race = null;
+
+            foreach (var line in File.ReadLines(filePath))
+            {
+                var newLine = line.Trim();
+
+                if (newLine.StartsWith("Race:", StringComparison.OrdinalIgnoreCase))
+                {
+                    string raceName = newLine.Substring("Race:".Length);
+                    race = FindRaceByName(raceName);
+
+                    if (race == null)
+                    {
+                        Console.WriteLine("Race was not found.");
+                        continue;
+                    }
+                }else if (race != null && !string.IsNullOrEmpty(newLine))
+                {
+                    string[] horsesSplit = newLine.Split(',');
+
+                    if (horsesSplit.Length != 3)
+                    {
+                        Console.WriteLine("Invalid input for horse entry.");
+                        continue;
+                    }
+                    
+                    string horseName = horsesSplit[0].Trim();
+                    string birthDateStr = horsesSplit[1].Trim();
+                    string horseId = horsesSplit[2].Trim();
+                    
+                    DateTime date = DateTime.Today;
+
+                    try
+                    {
+                        date = DateTime.Parse(birthDateStr);
+                    }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine("Invalid input for birth date.");
+                    }
+                    
+                    Horse horse = new Horse(horseName, date, horseId);
+                    if (race.AddHorse(horse))
+                    {
+                        Console.WriteLine($"Horse '{horseName}' added to race '{race.Name}'.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to add horse '{horseName}' to race '{race.Name}'. The race may be full or the horse may already be registered.");
+                    }
+                }
+            }
+        }
+        
         //function for adding horse manually
     }
 }
