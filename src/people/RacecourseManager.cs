@@ -248,5 +248,51 @@ namespace Horse_Race_App.people
         }
         
         //function for adding horse manually
+        public void addSingleHorse()
+        {
+            Console.WriteLine("Please enter the name of the race.");
+            string raceName = Console.ReadLine();
+            
+            Race race = FindRaceByName(raceName);
+
+            if (race == null)
+            {
+                Console.WriteLine("Race was not found.");
+                return;
+            }
+            
+            Console.WriteLine("Please enter details of the horse seperated by comma ',' .");
+            string[] horsesSplit = Console.ReadLine().Split(',');
+
+            if (horsesSplit.Length != 3)
+            {
+                Console.WriteLine("Invalid input for horse entry.");
+            }
+            
+            string horseName = horsesSplit[0].Trim();
+            string birthDateStr = horsesSplit[1].Trim();
+            string horseId = horsesSplit[2].Trim();
+                    
+            DateTime date = DateTime.Today;
+
+            try
+            {
+                date = DateTime.Parse(birthDateStr);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Invalid input for birth date.");
+            }
+                    
+            Horse horse = new Horse(horseName, date, horseId);
+            if (race.AddHorse(horse))
+            {
+                Console.WriteLine($"Horse '{horseName}' added to race '{race.Name}'.");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to add horse '{horseName}' to race '{race.Name}'. The race may be full or the horse may already be registered.");
+            }
+        }
     }
 }
