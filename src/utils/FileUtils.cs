@@ -69,5 +69,67 @@ namespace Horse_Race_App.utils
             }
             return raceEvents;
         }
+
+        public static void WriteNewRaceEvent(RaceEvents raceEvent)
+        {
+            using (StreamWriter writer =
+                   new StreamWriter(
+                       "C:\\Users\\lomze\\OneDrive - Dundalk Institute of Technology\\DkIT\\Web Frameworks\\Lab work\\Horse Race App\\src\\utils\\RaceEvent.txt"))
+            {
+                string raceNames = string.Join(",", raceEvent.Races.Select(r => r.Name));
+                string eventLine = $"Name:{raceEvent.EventName},Location:{raceEvent.Location},StartDate:{raceEvent.StartDate:MM/dd/yyyy},Races:({raceNames}),NumberOfRaces:({raceEvent.NumberOfRaces})";
+                
+                writer.WriteLine(eventLine);
+            }
+        }
+
+        public static void WriteNewRace(Race race)
+        {
+            using (StreamWriter writer =
+                   new StreamWriter(
+                       "C:\\Users\\lomze\\OneDrive - Dundalk Institute of Technology\\DkIT\\Web Frameworks\\Lab work\\Horse Race App\\src\\utils\\Race.txt"))
+            {
+                string horseNames = string.Join(",", race.Horses.Select(r => r.HorseName));
+                string raceLine =
+                    $"Name:{race.Name},StartTime:{race.StartTime},HorsesIDs({horseNames}),AllowedHorses:{race.AllowedHorses}";
+                
+                writer.WriteLine(raceLine);
+            }
+        }
+
+        public static void WriteNewHorse(Horse horse)
+        {
+            using (StreamWriter writer =
+                   new StreamWriter(
+                       "C:\\Users\\lomze\\OneDrive - Dundalk Institute of Technology\\DkIT\\Web Frameworks\\Lab work\\Horse Race App\\src\\utils\\Horse.txt"))
+            {
+                string horseLine = $"HorseId:{horse.HorseId},BirthDate:{horse.BirthDate},HorseName:{horse.HorseName}";
+                writer.WriteLine(horseLine);
+            }
+        }
+
+        public static void WriteWholeNewHorses(List<Horse> list)
+        {
+            foreach (var horse in list)
+            {
+                WriteNewHorse(horse);
+            }
+        }
+
+        public static void WriteWholeNewRaces(List<Race> list)
+        {
+            foreach (var Race in list)
+            {
+                WriteNewRace(Race);
+            }
+        }
+
+        public static void WriteWholeNewEventRaces(List<RaceEvents> list)
+        {
+            foreach (var RaceEvent in list)
+            {
+                WriteNewRaceEvent(RaceEvent);
+            }
+        }
     }
 }
