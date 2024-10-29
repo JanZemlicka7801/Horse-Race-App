@@ -44,7 +44,30 @@ namespace Horse_Race_App.utils
             }
             return races;
         }
-        
-        
+
+        public static List<RaceEvents> ReadRaceEvents()
+        {
+            var raceEvents = new List<RaceEvents>();
+            foreach (var line in File.ReadLines(
+                         "C:\\Users\\lomze\\OneDrive - Dundalk Institute of Technology\\DkIT\\Web Frameworks\\Lab work\\Horse Race App\\src\\utils\\RaceEvent.txt"))
+            {
+                var parts = line.Split(',');
+                string name = parts[0].Split(':')[1];
+                string location = parts[1].Split(':')[1];
+                DateTime date = DateTime.Parse(parts[2].Split(':')[1]);
+                var raceNames = parts[3].Split('(')[1].TrimEnd(')').Split(',').ToList();
+                int numberOfRaces = Int32.Parse(parts[4].Split(':')[1]);
+                List<Race> listOfRaces = ReadRaces();
+                foreach (var race in listOfRaces)
+                {
+                    if (!raceNames.Contains(race.Name))
+                    {
+                        listOfRaces.Remove(race);
+                    }
+                }
+                raceEvents.Add(new RaceEvents(name, location, date, listOfRaces, numberOfRaces));
+            }
+            return raceEvents;
+        }
     }
 }
