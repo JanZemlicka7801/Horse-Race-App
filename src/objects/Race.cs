@@ -3,17 +3,13 @@
     public class Race
     {
         public string Name { get; set; }
-        public DateTime StartTime { get; set; }
+        public TimeSpan StartTime { get; set; }
         public List<Horse> Horses { get; set; }
         public int AllowedHorses { get; set; }
-        public bool Availability { get; set; }
 
-        public Race(string raceName, DateTime raceStart, int raceAllowedHorses)
+        public Race(string raceName, TimeSpan raceStart, List<Horse> list, int raceAllowedHorses)
         {
-            Horses = new List<Horse>();
-            Availability = true;
-
-            if (!ValidateRaceName(raceName) || !ValidateStartTime(raceStart) ||
+            if (!ValidateRaceName(raceName) ||
                 !ValidateRaceAllowedHorses(raceAllowedHorses))
             {
                 return; //the input is valid so the Race won't be created
@@ -22,19 +18,13 @@
             Name = raceName;
             StartTime = raceStart;
             AllowedHorses = raceAllowedHorses;
+            Horses = list;
         }
 
         private static bool ValidateRaceAllowedHorses(int raceAllowedHorses)
         {
             if (raceAllowedHorses >= 3 && raceAllowedHorses <= 15) return true;
             Console.WriteLine("Race allowed horses are between 3 and 15.");
-            return false;
-        }
-
-        private static bool ValidateStartTime(DateTime raceStart)
-        {
-            if (raceStart > DateTime.Now) return true;
-            Console.WriteLine("Start time cannot be in the past.");
             return false;
         }
         
@@ -56,7 +46,7 @@
         public bool AddHorse(Horse horse)
         {
             if (Horses.Contains(horse)){ Console.WriteLine("Horse is already added."); return false;}
-            if (!IsAvailabile()){ Console.WriteLine("The race is already full."); return false;}
+            if (RaceIsFull()){ Console.WriteLine("The race is already full."); return false;}
             Horses.Add(horse);
             return true;
         }
@@ -70,16 +60,10 @@
         {
             return Horses.Count == 0;
         }
-
-        //is not important could be deleted
-        private bool IsAvailabile()
-        {
-            return !RaceIsFull();
-        }
         
         public override string ToString()
         {
-            string raceDetails = $"Race: {Name}, Start Time: {StartTime.ToShortTimeString()}, Allowed Horses: {AllowedHorses}, Current Horses: {Horses.Count}\nHorses:";
+            string raceDetails = $"Race: {Name}, Start Time: {StartTime}, Allowed Horses: {AllowedHorses}, Current Horses: {Horses.Count}\nHorses:";
             if (Horses.Count == 0)
             {
                 raceDetails += "\n  No horses registered.";

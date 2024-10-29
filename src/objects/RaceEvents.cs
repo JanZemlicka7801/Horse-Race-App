@@ -4,12 +4,13 @@
     {
         public string EventName { get; set; }
         public string Location { get; set; }
+        public DateTime StartDate { get; set; }
         public List<Race> Races { get; set; }
         public int NumberOfRaces { get; set; }
 
-        public RaceEvents(string eventName, string location, int numberOfRaces)
+        public RaceEvents(string eventName, string location, DateTime startDate, List<Race> race, int numberOfRaces)
         {
-            if (!ValidateEventName(eventName) || !ValidateEventLocation(location) || !ValidateNumberOfRaces(numberOfRaces))
+            if (!ValidateEventName(eventName) || !ValidateEventLocation(location) || !ValidateNumberOfRaces(numberOfRaces) || !ValidateStartDate(startDate))
             {
                 Console.WriteLine("Invalid element was entered.");
                 return;
@@ -17,7 +18,18 @@
             NumberOfRaces = numberOfRaces;
             EventName = eventName;
             Location = location;
-            Races = new List<Race>();
+            Races = race;
+        }
+
+        public bool ValidateStartDate(DateTime start)
+        {
+            if (StartDate <= DateTime.Today)
+            {
+                Console.WriteLine("Invalid date, cannot be in the past or today.");
+                return false;
+            }
+
+            return true;
         }
         
         //validates number of races

@@ -4,7 +4,7 @@ namespace Horse_Race_App.people
 {
     public class Racegoer
     {
-        public static void ViewUpcomingEvents(List<RaceEvents> events)
+        public void ViewUpcomingEvents(List<RaceEvents> events)
         {
             Console.WriteLine("Upcoming Events:");
             foreach (var raceEvent in events)

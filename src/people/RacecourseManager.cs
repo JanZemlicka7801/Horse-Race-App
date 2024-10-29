@@ -1,8 +1,9 @@
 ﻿using Horse_Race_App.objects;
+using Horse_Race_App.utils;
 
 namespace Horse_Race_App.people
 {
-    internal class RacecourseManager
+    public class RacecourseManager
     {
         public List<RaceEvents> Events {  get; set; }
 
@@ -13,17 +14,18 @@ namespace Horse_Race_App.people
         }
 
         //function for creating a race event and log it inside the manager
-        public RaceEvents CreateRaceEvent(string eventName, string location, int numberOfRaces)
+        public RaceEvents CreateRaceEvent(string eventName, string location, DateTime date, List<Race> list, int numberOfRaces)
         {
-            foreach (var raceEvent in Events)
+            foreach (var raceEvent in FileUtils.ReadRaceEvents())
             {
                 if (raceEvent.EventName.Equals(eventName))
                 {
                     Console.WriteLine($"Event {eventName} is already in the system.");
+                    return null;
                 }
             }
 
-            var RaceEvent = new RaceEvents(eventName, location, numberOfRaces);
+            var RaceEvent = new RaceEvents(eventName, location, date, list, numberOfRaces);
             Events.Add(RaceEvent);
             return RaceEvent;
         }
@@ -77,7 +79,7 @@ namespace Horse_Race_App.people
             {
                 Console.WriteLine(
                     $"Please enter name for the {i + 1}. race event, start date and number of allowed horses for this race event.\n" +
-                    $"In following format: name,date(yyyy-mm-dd),number of allowed horses\n" +
+                    $"In following format: name,time (hh:mm),number of allowed horses\n" +
                     $"All variables need to be seperated by a coma.");
                 string details = Console.ReadLine();
                 string[] detailsSplit = details.Split(',');
@@ -90,13 +92,13 @@ namespace Horse_Race_App.people
                 }
 
                 string raceName;
-                DateTime date;
+                TimeSpan date;
                 int numberOfHorses;
                     
                 try
                 {
                     raceName = detailsSplit[0];
-                    date = DateTime.Parse(detailsSplit[1]);
+                    date = TimeSpan.Parse(detailsSplit[1]);
                     numberOfHorses = Convert.ToInt32(detailsSplit[2]);
                 }
                 catch (Exception)
@@ -112,18 +114,13 @@ namespace Horse_Race_App.people
                     continue;
                 }
                 
-                if(date < DateTime.Now){
-                    Console.WriteLine("Invalid date. Please enter a future date in the format yyyy-mm-dd.");
-                    continue;
-                }
-                
                 if (numberOfHorses < 3 || numberOfHorses > 15)
                 {
                     Console.WriteLine("Invalid number of allowed horses. It must be between 3 and 15.");
                     continue;
                 }
                 
-                Race race = new Race(raceName, date, numberOfHorses);
+                Race race = new Race(raceName, date, new List<Horse>(), numberOfHorses);
                 raceEvent.AddRace(race);
                 Console.WriteLine($"Race '{raceName}' has been added to event '{eventName}'.");
             }
