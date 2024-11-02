@@ -19,10 +19,35 @@ namespace Horse_Race_App.utils
             foreach (var line in File.ReadLines(HorseFilePath))
             {
                 var parts = line.Split(',');
-                string horseId = parts[0].Split(':')[1];
-                DateTime birthDate = DateTime.Parse(parts[1].Split(':')[1]);
-                string horseName = parts[2].Split(':')[1];
-                rawHorseData.Add((horseId, birthDate, horseName));
+
+                if (parts.Length < 3)
+                {
+                    continue;
+                }
+
+                string horseId = parts[0].Split(':')[1].Trim();
+                string birthDateString = parts[1].Split(':')[1].Trim();
+                string horseName = parts[2].Split(':')[1].Trim();
+
+                // resource: https://stackoverflow.com/questions/11999912/datetime-tryparseexact-rejecting-valid-formats
+                if (DateTime.TryParseExact(
+                        // the string that will be parsed
+                        birthDateString, 
+                        // provides the exact format for the parsing
+                        "MM/dd/yyyy",
+                        // passing culture specific formatting, null is default
+                        null,
+                        // won't display any additional adjustments like UTC
+                        System.Globalization.DateTimeStyles.None, 
+                        // if everything will pass then it will be stored inside the birthDate
+                        out DateTime birthDate))
+                {
+                    rawHorseData.Add((horseId, birthDate, horseName));
+                }
+                else
+                {
+                    continue;
+                }
             }
 
             return rawHorseData;
@@ -252,9 +277,9 @@ namespace Horse_Race_App.utils
 
         public static void WriteNewHorse(Horse horse)
         {
-            using (StreamWriter writer = new StreamWriter(HorseFilePath))
+            using (StreamWriter writer = new StreamWriter(HorseFilePath, append: true))
             {
-                string horseLine = $"HorseId:{horse.HorseId},BirthDate:{horse.BirthDate},HorseName:{horse.HorseName}";
+                string horseLine = $"HorseId:{horse.HorseId},BirthDate:{horse.BirthDate:MM/dd/yyyy},HorseName:{horse.HorseName}";
                 writer.WriteLine(horseLine);
             }
         }
