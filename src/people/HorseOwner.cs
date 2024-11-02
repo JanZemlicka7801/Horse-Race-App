@@ -1,36 +1,40 @@
 ﻿using Horse_Race_App.objects;
+using Horse_Race_App.utils;
 
 namespace Horse_Race_App.people
 {
-    internal class HorseOwner
+    public class HorseOwner
     {
-        public void EnterHorseInRace(Race race, string name, DateTime date, string horseId)
+        public static void EnterHorseInRace(Race race, string name, DateTime date, string horseId)
         {
-            Horse horse = new Horse("", DateTime.Today, "");
-            if (!horse.ValidateHorseId(horseId) || !horse.ValidateHorseAge(date) || !horse.ValidateHorseName(name))
+            if (!Horse.ValidateHorseId(horseId, FileUtils.DataToHorses()) || 
+                !Horse.ValidateHorseAge(date) || 
+                !Horse.ValidateHorseName(name))
             {
-                Console.WriteLine("Invalid Horses properties!");
+                Console.WriteLine("Invalid horse properties!");
                 return;
             }
+
+            Horse horse = new Horse(name, date, horseId);
+
             Console.WriteLine(race.AddHorse(horse)
                 ? $"{horse.HorseName} has been entered in {race.Name}."
-                : "Horse has not been entered.");
+                : "Horse could not be entered in the race.");
         }
 
         public void RemoveHorseFromRace(Race race, string name)
         {
-            Horse horseToRemove = race.Horses.Where(h => h.HorseName == name).FirstOrDefault();
+            Horse horseToRemove = race.Horses.FirstOrDefault(h => h.HorseName == name);
 
             if (horseToRemove != null)
             {
                 if (race.RemoveHorse(horseToRemove))
                 {
                     Console.WriteLine($"Horse {name} has been removed from {race.Name}.");
-                    race.RemoveHorse(horseToRemove);
                 }
                 else
                 {
-                    Console.WriteLine($"Horse {name} has not been removed from {race.Name}.");
+                    Console.WriteLine($"Horse {name} could not be removed from {race.Name}.");
                 }
             }
             else
