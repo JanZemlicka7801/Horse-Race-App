@@ -6,6 +6,40 @@ namespace Horse_Race_App.utils
 {
     public class Menus
     {
+        public static void raceGoerMenu(Racegoer racegoer)
+        {
+            while (true)
+            {
+                List<RaceEvents> upcomingRaceEvents = FileUtils.ReadRaceEvents();
+
+                Console.WriteLine("Please select one of the following options:\n" +
+                                  "1. See upcoming events\n" +
+                                  "2. Quit the program");
+
+                if (int.TryParse(Console.ReadLine(), out int choice))
+                {
+                    switch (choice)
+                    {
+                        case 1:
+                            racegoer.ViewUpcomingEvents(upcomingRaceEvents);
+                            break;
+
+                        case 2:
+                            Console.WriteLine("Thank you for using our program. Goodbye!");
+                            return;
+
+                        default:
+                            Console.WriteLine("Invalid option, please try again.");
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a number.");
+                }
+            }
+        }
+        
         public static void horseOwnerMenu(HorseOwner horseOwner)
         {
             while (true)
