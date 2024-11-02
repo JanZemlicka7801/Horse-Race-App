@@ -39,5 +39,73 @@ namespace Horse_Race_App.utils
             }
             return horses;
         }
+        
+        public static void DeleteHorse(string horseId)
+        {
+            var remainingHorses = File.ReadLines(HorseFilePath).Where(line => !line.Contains(horseId)).ToList();
+            
+            File.WriteAllLines(HorseFilePath,remainingHorses);
+        }
+        
+        public static void DeleteRaceEventsFromFile(List<RaceEvents> eventsToDelete)
+        {
+            var allEvents = File.ReadAllLines(RaceEventFilePath).ToList();
+            var remainingEvents = new List<string>();
+
+            foreach (var line in allEvents)
+            {
+                string eventName = line.Split(',')[0].Split(':')[1].Trim();
+                bool shouldDelete = false;
+
+                foreach (var eventToDelete in eventsToDelete)
+                {
+                    if (eventToDelete.EventName.Equals(eventName, StringComparison.Ordinal))
+                    {
+                        shouldDelete = true;
+                        break;
+                    }
+                }
+                
+                if (!shouldDelete)
+                {
+                    remainingEvents.Add(line);
+                }
+            }
+
+            File.WriteAllLines(RaceEventFilePath, remainingEvents);
+        }
+        
+        public static void DeleteRacesFromFile(List<Race> racesToDelete)
+        {
+            var allRaces = File.ReadAllLines(RaceFilePath).ToList();
+            var remainingRaces = new List<string>();
+
+            if (allRaces.Count == 0)
+            {
+                return;
+            }
+
+            foreach (string line in allRaces)
+            {
+                string raceName = line.Split(',')[0].Split(':')[1].Trim();
+                bool shouldDelete = false;
+
+                foreach (var race in racesToDelete)
+                {
+                    if (race.Name == raceName)
+                    {
+                        shouldDelete = true;
+                        break;
+                    }
+                }
+
+                if (!shouldDelete)
+                {
+                    remainingRaces.Add(line);
+                }
+            }
+            
+            File.WriteAllLines(RaceFilePath, remainingRaces);
+        }
     }
 }
