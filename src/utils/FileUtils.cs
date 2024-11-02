@@ -117,6 +117,37 @@ namespace Horse_Race_App.utils
             return raceEvents;
         }
         
+        public static List<RaceEvents> GetPastRaceEventsList()
+        {
+            var pastEvents = new List<RaceEvents>();
+            var allEvents = ReadRaceEvents();
+
+            foreach (var raceEvent in allEvents)
+            {
+                if (raceEvent.StartDate < DateTime.Today)
+                {
+                    pastEvents.Add(raceEvent);
+                }
+            }
+
+            return pastEvents;
+        }
+
+        public static List<Race> GetAllRacesFromListOfEvents(List<RaceEvents> raceEvents)
+        {
+            var allRaces = new List<Race>();
+
+            foreach (var raceEvent in raceEvents)
+            {
+                if (raceEvent.Races != null)
+                {
+                    allRaces.AddRange(raceEvent.Races);
+                }
+            }
+
+            return allRaces;
+        }
+        
         public static List<Horse> DataToHorses()
         {
             var horses = new List<Horse>();
