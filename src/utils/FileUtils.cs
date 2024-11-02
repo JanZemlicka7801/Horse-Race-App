@@ -28,6 +28,95 @@ namespace Horse_Race_App.utils
             return rawHorseData;
         }
         
+        public static List<Race> ReadRaces()
+        {
+            var races = new List<Race>();
+
+            foreach (var line in File.ReadLines(RaceFilePath))
+            {
+                try
+                {
+                    var parts = line.Split(',');
+
+                    if (parts.Length < 4)
+                    {
+                        continue;
+                    }
+
+                    string name = parts[0].Split(':')[1].Trim();
+                    
+                    if (!TimeSpan.TryParse(parts[1].Split(':')[1], out TimeSpan startTime))
+                    {
+                        continue;
+                    }
+
+                    var horseIDs = parts[2].Split('(')[1].TrimEnd(')').Split(',').Select(h => h.Trim()).ToList();
+                    List<Horse> allHorses = DataToHorses();
+                    var raceHorses = allHorses.Where(h => horseIDs.Contains(h.HorseId)).ToList();
+
+                    if (!int.TryParse(parts[3].Split(':')[1], out int allowedHorses))
+                    {
+                        continue;
+                    }
+
+                    races.Add(new Race(name, startTime, raceHorses, allowedHorses));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error parsing race: {ex.Message}");
+                }
+            }
+
+            return races;
+        }
+
+        
+        public static List<RaceEvents> ReadRaceEvents()
+        {
+            var raceEvents = new List<RaceEvents>();
+
+            foreach (var line in File.ReadLines(RaceEventFilePath))
+            {
+                try
+                {
+                    var parts = line.Split(',');
+
+                    if (parts.Length < 5)
+                    {
+                        continue;
+                    }
+
+                    string name = parts[0].Split(':')[1].Trim();
+                    string location = parts[1].Split(':')[1].Trim();
+
+                    DateTime date;
+                    if (!DateTime.TryParse(parts[2].Split(':')[1], out date))
+                    {
+                        continue;
+                    }
+
+                    var raceNames = parts[3].Split('(')[1].TrimEnd(')').Split(',').Select(r => r.Trim()).ToList();
+
+                    string numberOfRacesStr = parts[4].Split(':')[1].Trim('(', ')');
+                    if (!int.TryParse(numberOfRacesStr, out int numberOfRaces))
+                    {
+                        continue;
+                    }
+
+                    List<Race> listOfRaces = ReadRaces();
+                    var eventRaces = listOfRaces.Where(r => raceNames.Contains(r.Name)).ToList();
+
+                    raceEvents.Add(new RaceEvents(name, location, date, eventRaces, numberOfRaces));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error parsing race event: {ex.Message}");
+                }
+            }
+
+            return raceEvents;
+        }
+        
         public static List<Horse> DataToHorses()
         {
             var horses = new List<Horse>();
