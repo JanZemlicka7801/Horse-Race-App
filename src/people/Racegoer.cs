@@ -6,6 +6,12 @@ namespace Horse_Race_App.people
     {
         public void ViewUpcomingEvents(List<RaceEvents> events)
         {
+            if (events.Count == 0)
+            {
+                Console.WriteLine("There are no upcoming events. Please try it again later.");
+                return;
+            }
+            
             Console.WriteLine("Upcoming Events:");
             foreach (var raceEvent in events)
             {
