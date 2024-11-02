@@ -27,5 +27,17 @@ namespace Horse_Race_App.utils
 
             return rawHorseData;
         }
+        
+        public static List<Horse> DataToHorses()
+        {
+            var horses = new List<Horse>();
+            var rawHorseData = ReadHorseData();
+            foreach (var (horseId, birthDate, horseName) in rawHorseData)
+            {
+                var horse = new Horse(horseName, birthDate, horseId, skipValidation: true);
+                horses.Add(horse);
+            }
+            return horses;
+        }
     }
 }
