@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Horse_Race_App.utils;
 
 namespace Horse_Race_App.objects
@@ -13,6 +11,10 @@ namespace Horse_Race_App.objects
         public DateTime BirthDate { get; set; }
         public string HorseId { get; set; }
 
+        /**
+         * Main constructor for a horse, its name, date of birth and id. If the new horse is being created it is set to false
+         * by default, when reading from a file where the data has been validated already the boolean will be set to true.
+         */
         public Horse(string name, DateTime birthDate, string horseId, bool skipValidation = false)
         {
             if (!skipValidation)
@@ -41,6 +43,10 @@ namespace Horse_Race_App.objects
             HorseId = horseId;
         }
 
+        /**
+         * Retrieves a list of horses data from file with stored horses.
+         * (* won't retrieve a horses as objects because it is not necessary only working with those data is necessary)
+         */
         private static List<Horse> GetSavedHorses()
         {
             if (listOfSavedHorses == null)
@@ -50,11 +56,17 @@ namespace Horse_Race_App.objects
             return listOfSavedHorses;
         }
 
+        /**
+         * Validates name of a horse, won't accept empty or null.
+         */
         public static bool ValidateHorseName(string name)
         {
             return !string.IsNullOrEmpty(name);
         }
 
+        /**
+         * Validates horse age that needs to be between 2 and 5 years old.
+         */
         public static bool ValidateHorseAge(DateTime birthDate)
         {
             //get the current date
@@ -67,6 +79,9 @@ namespace Horse_Race_App.objects
             return age is >= 2 and <= 5;
         }
 
+        /**
+         * Validates an ID of horse if it is not already in the system using a pattern.
+         */
         public static bool ValidateHorseId(string horseId, List<Horse> savedHorses)
         {
             foreach (var horse in savedHorses)
@@ -81,6 +96,9 @@ namespace Horse_Race_App.objects
             return Regex.IsMatch(horseId, pattern);
         }
 
+        /**
+         * Displays data in a nice formatted text.
+         */
         public override string ToString()
         {
             return $"{HorseName} (ID: {HorseId}), Born: {BirthDate.ToShortDateString()}";
