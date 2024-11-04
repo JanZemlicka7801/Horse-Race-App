@@ -1,295 +1,274 @@
-﻿using Horse_Race_App.objects;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Horse_Race_App.objects;
 using Horse_Race_App.utils;
 
 namespace Horse_Race_App.people
 {
     public class RacecourseManager
     {
-        public List<RaceEvents> Events {  get; set; }
+        private List<RaceEvents> Events { get; set; }
 
-        //main list that holds all race events
+        // Constructor for initializing the manager's event list from storage
         public RacecourseManager()
         {
-            Events = new List<RaceEvents>();
+            Events = FileUtils.ReadRaceEvents();
         }
 
-        //function for creating a race event and log it inside the manager
-        public RaceEvents CreateRaceEvent(string eventName, string location, DateTime date, List<Race> list, int numberOfRaces)
+        // Method to create and add a new race event
+        public void CreateNewRaceEvent()
         {
-            foreach (var raceEvent in FileUtils.ReadRaceEvents())
+            Console.WriteLine("Enter event details in the format: Name, Location, Date (MM/dd/yyyy), Number of Races");
+            string[] details = Console.ReadLine()?.Split(',');
+
+            if (details == null || details.Length != 4)
             {
-                if (raceEvent.EventName.Equals(eventName))
+                Console.WriteLine("Invalid input format.");
+                return;
+            }
+
+            string eventName = details[0].Trim();
+            string location = details[1].Trim();
+
+            if (!DateTime.TryParseExact(details[2].Trim(), "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime date) || date <= DateTime.Today)
+            {
+                Console.WriteLine("Invalid date entered. The date must be in the future.");
+                return;
+            }
+
+            if (!int.TryParse(details[3].Trim(), out int numberOfRaces) || numberOfRaces < 1 || numberOfRaces > 30)
+            {
+                Console.WriteLine("Invalid number entered. Enter a number between 1 and 30.");
+                return;
+            }
+
+            // Ensure event name uniqueness
+            if (FindRaceEventByName(eventName) != null)
+            {
+                Console.WriteLine($"Event '{eventName}' already exists.");
+                return;
+            }
+
+            // Add and save the new event
+            var newEvent = new RaceEvents(eventName, location, date, new List<Race>(), numberOfRaces);
+            Events.Add(newEvent);
+            FileUtils.WriteNewRaceEvent(newEvent);
+            Console.WriteLine($"Event '{eventName}' created successfully.");
+        }
+
+        // Method to add races to an event
+        public void AddRacesToEvent()
+        {
+            Console.WriteLine("Enter the event name to add races to:");
+            string eventName = Console.ReadLine();
+            var raceEvent = FindRaceEventByName(eventName);
+
+            if (raceEvent == null)
+            {
+                Console.WriteLine($"Event '{eventName}' not found.");
+                return;
+            }
+
+            int numberOfRaces = GetIntegerInput("Enter the number of races to add:");
+            if (numberOfRaces <= 0) return;
+
+            for (int i = 0; i < numberOfRaces; i++)
+            {
+                Race newRace = CreateRace();
+                if (newRace != null)
                 {
-                    Console.WriteLine($"Event {eventName} is already in the system.");
-                    return null;
+                    raceEvent.AddRace(newRace);
+                    Console.WriteLine($"Race '{newRace.Name}' added to event '{eventName}'.");
                 }
             }
 
-            var RaceEvent = new RaceEvents(eventName, location, date, list, numberOfRaces);
-            Events.Add(RaceEvent);
-            return RaceEvent;
+            FileUtils.WriteWholeNewEventRaces(Events);
         }
 
-        //function for deleting the race event from the manager
-        public bool DeleteRaceEvent(string eventName)
+        // Uploads horses to a race from a file
+        public void UploadHorsesToRace()
         {
-            RaceEvents raceToDelete = FindRaceEventByName(eventName);
-            Events.Remove(raceToDelete);
-            Console.WriteLine($"Event {eventName} is not in the system. In this case, the race event won't be deleted.");
-            return false;
+            Console.WriteLine("Enter the file path for the horse list:");
+            string filePath = Console.ReadLine();
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            {
+                Console.WriteLine("File not found.");
+                return;
+            }
+
+            AddHorsesFromFile(filePath);
+            FileUtils.WriteWholeNewRaces(GetAllRaces());
         }
-        
+
+        // Adds a single horse to a race
+        public void AddSingleHorse()
+        {
+            Console.WriteLine("Enter the race name:");
+            Race race = FindRaceByName(Console.ReadLine());
+
+            if (race == null)
+            {
+                Console.WriteLine("Race not found.");
+                return;
+            }
+
+            Console.WriteLine("Enter horse details in the format: Name, BirthDate (MM/dd/yyyy), ID");
+            string[] details = Console.ReadLine().Split(',');
+            if (details == null || details.Length != 3)
+            {
+                Console.WriteLine("Invalid horse details format.");
+                return;
+            }
+
+            Horse horse = CreateHorse(details);
+            if (horse != null && race.AddHorse(horse))
+            {
+                Console.WriteLine($"Horse '{horse.HorseName}' added to race '{race.Name}'.");
+            }
+            else
+            {
+                Console.WriteLine("Failed to add horse to the race.");
+            }
+        }
+
+        // Helper Methods
+
+        // Finds a race event by its name
         private RaceEvents FindRaceEventByName(string eventName)
         {
-            foreach (var raceEvent in Events)
+            foreach (var e in Events)
             {
-                    if (raceEvent.EventName.Equals(eventName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return raceEvent;
-                    }
+                if (e.EventName.Equals(eventName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return e;
+                }
             }
             return null;
         }
-        
-        //function for adding races to the event
-        public void AddRaces(string eventName)
-        {
-            //loop through events to find the right one using case ignorance
-            var raceEvent = FindRaceEventByName(eventName);
-            if (raceEvent == null)
-            {
-                Console.WriteLine($"Event '{eventName}' not found.");
-                return;
-            }
 
-            int numberOfRaces;
-            try
-            {
-                Console.WriteLine($"Please enter how many races would you like to add?");
-                numberOfRaces = Convert.ToInt32(Console.ReadLine());
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Invalid input try it again.");
-                return;
-            }
-            
-            //create those races
-            for (var i = 0; i < numberOfRaces; i++)
-            {
-                Console.WriteLine(
-                    $"Please enter name for the {i + 1}. race event, start date and number of allowed horses for this race event.\n" +
-                    $"In following format: name,time (hh:mm),number of allowed horses\n" +
-                    $"All variables need to be seperated by a coma.");
-                string details = Console.ReadLine();
-                string[] detailsSplit = details.Split(',');
-                
-                //if there are no 3 inputs then error
-                if (detailsSplit.Length != 3)
-                {
-                    Console.WriteLine("Invalid input try to create next race.");
-                    continue;
-                }
-
-                string raceName;
-                TimeSpan date;
-                int numberOfHorses;
-                    
-                try
-                {
-                    raceName = detailsSplit[0];
-                    date = TimeSpan.Parse(detailsSplit[1]);
-                    numberOfHorses = Convert.ToInt32(detailsSplit[2]);
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Invalid inputs try to create next race.");
-                    continue;
-                }
-                
-                //validation of component, but could use already created validators
-                if (string.IsNullOrEmpty(raceName))
-                {
-                    Console.WriteLine("Race name cannot be empty.");
-                    continue;
-                }
-                
-                if (numberOfHorses < 3 || numberOfHorses > 15)
-                {
-                    Console.WriteLine("Invalid number of allowed horses. It must be between 3 and 15.");
-                    continue;
-                }
-                
-                Race race = new Race(raceName, date, new List<Horse>(), numberOfHorses);
-                raceEvent.AddRace(race);
-                Console.WriteLine($"Race '{raceName}' has been added to event '{eventName}'.");
-            }
-        }
-        
-        //function for deleting races from the event
-        public void RemoveRaces(string eventName)
-        {
-            //find the race event
-            var raceEvent = Events.FirstOrDefault(e => e.EventName.Equals(eventName, StringComparison.OrdinalIgnoreCase));
-            if (raceEvent == null)
-            {
-                Console.WriteLine($"Event '{eventName}' not found.");
-                return;
-            }
-
-            //check if there is anything to delete
-            if (raceEvent.IsEmptyEvent())
-            {
-                Console.WriteLine($"No races available to delete in event '{eventName}'.");
-                return;
-            }
-            
-            //display possible deletions
-            Console.WriteLine("Please write numbers of races that you want to delete.");
-            string input = Console.ReadLine();
-            string[] numbersSplit = input.Split(',');
-            
-            //try to delete races
-            foreach (var selection in numbersSplit)
-            {
-                try
-                {
-                    int number = Convert.ToInt32(selection);
-                    Race raceToRemove = raceEvent.Races[number];
-                    raceEvent.RemoveRace(raceToRemove);
-                    Console.WriteLine($"Race '{raceToRemove.Name}' has been deleted.");
-                }
-                catch (FormatException)
-                {
-                    Console.WriteLine("Invalid input... Selected option cannot be deleted.");
-                }
-            }
-        }
-        
+        // Finds a race by its name across all events
         private Race FindRaceByName(string raceName)
         {
             foreach (var raceEvent in Events)
             {
-                foreach (var race in raceEvent.Races)
+                foreach (var r in raceEvent.Races)
                 {
-                    if (race.Name.Equals(raceName, StringComparison.OrdinalIgnoreCase))
+                    if (r.Name.Equals(raceName, StringComparison.OrdinalIgnoreCase))
                     {
-                        return race;
+                        return r;
                     }
                 }
             }
             return null;
         }
-        
-        //function for adding whole list of horses for each race
-        public void addHorsesFromFile(string filePath)
+
+        // Creates a race with user input
+        private Race CreateRace()
         {
-            if (!File.Exists(filePath))
+            Console.WriteLine("Enter race details in the format: Name, StartTime (hh:mm), AllowedHorses");
+            string[] details = Console.ReadLine().Split(',');
+
+            if (details == null || details.Length != 3)
             {
-                Console.WriteLine("The specified file does not exist.");
-                return;
+                Console.WriteLine("Invalid race format.");
+                return null;
             }
 
-            Race race = null;
+            string raceName = details[0].Trim();
+            if (!TimeSpan.TryParse(details[1].Trim(), out TimeSpan startTime))
+            {
+                Console.WriteLine("Invalid start time.");
+                return null;
+            }
+
+            if (!int.TryParse(details[2].Trim(), out int allowedHorses) || allowedHorses < 3 || allowedHorses > 15)
+            {
+                Console.WriteLine("Allowed horses must be between 3 and 15.");
+                return null;
+            }
+
+            return new Race(raceName, startTime, new List<Horse>(), allowedHorses);
+        }
+
+        // Adds horses from a file to races
+        private void AddHorsesFromFile(string filePath)
+        {
+            Race currentRace = null;
 
             foreach (var line in File.ReadLines(filePath))
             {
-                var newLine = line.Trim();
+                string trimmedLine = line.Trim();
 
-                if (newLine.StartsWith("Race:", StringComparison.OrdinalIgnoreCase))
+                if (trimmedLine.StartsWith("Race:", StringComparison.OrdinalIgnoreCase))
                 {
-                    string raceName = newLine.Substring("Race:".Length);
-                    race = FindRaceByName(raceName);
-
-                    if (race == null)
+                    currentRace = FindRaceByName(trimmedLine.Substring("Race:".Length).Trim());
+                    if (currentRace == null)
                     {
-                        Console.WriteLine("Race was not found.");
-                        continue;
+                        Console.WriteLine("Race not found.");
                     }
-                }else if (race != null && !string.IsNullOrEmpty(newLine))
+                }
+                else if (currentRace != null && !string.IsNullOrEmpty(trimmedLine))
                 {
-                    string[] horsesSplit = newLine.Split(',');
-
-                    if (horsesSplit.Length != 3)
+                    string[] horseData = trimmedLine.Split(',');
+                    Horse horse = CreateHorse(horseData);
+                    if (horse != null && currentRace.AddHorse(horse))
                     {
-                        Console.WriteLine("Invalid input for horse entry.");
-                        continue;
-                    }
-                    
-                    string horseName = horsesSplit[0].Trim();
-                    string birthDateStr = horsesSplit[1].Trim();
-                    string horseId = horsesSplit[2].Trim();
-                    
-                    DateTime date = DateTime.Today;
-
-                    try
-                    {
-                        date = DateTime.Parse(birthDateStr);
-                    }
-                    catch (FormatException)
-                    {
-                        Console.WriteLine("Invalid input for birth date.");
-                    }
-                    
-                    Horse horse = new Horse(horseName, date, horseId);
-                    if (race.AddHorse(horse))
-                    {
-                        Console.WriteLine($"Horse '{horseName}' added to race '{race.Name}'.");
+                        Console.WriteLine($"Horse '{horse.HorseName}' added to race '{currentRace.Name}'.");
                     }
                     else
                     {
-                        Console.WriteLine($"Failed to add horse '{horseName}' to race '{race.Name}'. The race may be full or the horse may already be registered.");
+                        Console.WriteLine($"Failed to add horse '{horse.HorseName}' to race '{currentRace.Name}'.");
                     }
                 }
             }
         }
-        
-        //function for adding horse manually
-        public void addSingleHorse()
+
+        // Creates a horse object from an array of details
+        private Horse CreateHorse(string[] details)
         {
-            Console.WriteLine("Please enter the name of the race.");
-            string raceName = Console.ReadLine();
-            
-            Race race = FindRaceByName(raceName);
+            if (details.Length != 3)
+            {
+                Console.WriteLine("Invalid horse data format.");
+                return null;
+            }
 
-            if (race == null)
+            string horseName = details[0].Trim();
+            if (!DateTime.TryParseExact(details[1].Trim(), "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime birthDate))
             {
-                Console.WriteLine("Race was not found.");
-                return;
+                Console.WriteLine("Invalid birth date format.");
+                return null;
             }
-            
-            Console.WriteLine("Please enter details of the horse seperated by comma ',' .");
-            string[] horsesSplit = Console.ReadLine().Split(',');
+            string horseId = details[2].Trim();
 
-            if (horsesSplit.Length != 3)
-            {
-                Console.WriteLine("Invalid input for horse entry.");
-            }
-            
-            string horseName = horsesSplit[0].Trim();
-            string birthDateStr = horsesSplit[1].Trim();
-            string horseId = horsesSplit[2].Trim();
-                    
-            DateTime date = DateTime.Today;
+            return new Horse(horseName, birthDate, horseId);
+        }
 
-            try
+        // Gets integer input from the user
+        private int GetIntegerInput(string prompt)
+        {
+            Console.WriteLine(prompt);
+            int result;
+
+            if (int.TryParse(Console.ReadLine(), out result))
             {
-                date = DateTime.Parse(birthDateStr);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Invalid input for birth date.");
-            }
-                    
-            Horse horse = new Horse(horseName, date, horseId);
-            if (race.AddHorse(horse))
-            {
-                Console.WriteLine($"Horse '{horseName}' added to race '{race.Name}'.");
+                return result;
             }
             else
             {
-                Console.WriteLine($"Failed to add horse '{horseName}' to race '{race.Name}'. The race may be full or the horse may already be registered.");
+                return -1;
             }
+        }
+
+        // Retrieves all races across all events
+        private List<Race> GetAllRaces()
+        {
+            var allRaces = new List<Race>();
+            foreach (var raceEvent in Events)
+            {
+                allRaces.AddRange(raceEvent.Races);
+            }
+            return allRaces;
         }
     }
 }
