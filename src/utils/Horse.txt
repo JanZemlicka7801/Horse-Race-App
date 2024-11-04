@@ -1,1 +1,3 @@
-﻿HorseId:ABC123456789,BirthDate:10/28/2020,HorseName:Lojza
+HorseId:ABC123456789,BirthDate:10/28/2020,HorseName:Lojza
+HorseId:JAN174852963,BirthDate:07/08/2021,HorseName:Joe
+HorseId:KAT152698743,BirthDate:09/10/2021,HorseName:Kate
