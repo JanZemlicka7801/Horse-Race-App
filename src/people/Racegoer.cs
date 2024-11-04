@@ -4,7 +4,10 @@ namespace Horse_Race_App.people
 {
     public class Racegoer
     {
-        public void ViewUpcomingEvents(List<RaceEvents> events)
+        /*
+         * Takes in list of race event and displays races and horses that are associated with the event.
+         */
+        public static void ViewUpcomingEvents(List<RaceEvents> events)
         {
             if (events.Count == 0)
             {

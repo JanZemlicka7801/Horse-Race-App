@@ -8,13 +8,16 @@
         public List<Race> Races { get; set; }
         public int NumberOfRaces { get; set; }
 
+        /**
+         * Main constructor for race event with properties such as name, location, start date, list and number of races.
+         */
         public RaceEvents(string eventName, string location, DateTime startDate, List<Race> race, int numberOfRaces)
         {
-            bool isValid = true;
+            var isValid = true;
             if (!ValidateEventName(eventName)) isValid = false;
-            if (!ValidateEventLocation(location)) isValid = false;
-            if (!ValidateNumberOfRaces(numberOfRaces)) isValid = false;
-            if (!ValidateStartDate(startDate)) isValid = false;
+            else if (!ValidateEventLocation(location)) isValid = false;
+            else if (!ValidateNumberOfRaces(numberOfRaces)) isValid = false;
+            else if (!ValidateStartDate(startDate)) isValid = false;
     
             EventName = eventName;
             Location = location;
@@ -28,21 +31,25 @@
             }
         }
 
-        public bool ValidateStartDate(DateTime start)
+        /*
+         * Validates date of the event to be in the future.
+         */
+        private static bool ValidateStartDate(DateTime start)
         {
-            if (start <= DateTime.Today)
+            if (start > DateTime.Today)
             {
                 Console.WriteLine("Invalid date, cannot be in the past or today.");
-                return false;
+                return true;
             }
-
-            return true;
+            return false;
         }
         
-        //validates number of races
-        public bool ValidateNumberOfRaces(int number)
+        /*
+         * Validates number of races to be from 1 to 30 per event.
+         */
+        private bool ValidateNumberOfRaces(int number)
         {
-            if (number < 1 || number > 30)
+            if (number <= 0 || number > 30)
             {
                 Console.WriteLine("Invalid number was entered. The possible number can be between 1 and 30.");
                 return false;
@@ -50,8 +57,10 @@
             return true;
         }
         
-        //validates event name
-        public bool ValidateEventName(string name)
+        /*
+         * Validates the name if it is provided and does not equal null.
+         */
+        private bool ValidateEventName(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -62,8 +71,10 @@
             return true;
         }
         
-        //validates location
-        public bool ValidateEventLocation(string location)
+        /*
+         * Validates the location if it is provided and does not equal null.
+         */
+        private bool ValidateEventLocation(string location)
         {
             if (string.IsNullOrEmpty(location))
             {
@@ -73,19 +84,25 @@
             return true;
         }
         
-        //function for checking if the event is full
+        /*
+         * Checks if the event's capacity is full.
+         */
         private bool IsFullEvent()
         {
-            return Races.Count >= NumberOfRaces;
+            return Races.Count == NumberOfRaces;
         }
         
-        //checking if the event doesn't have races
+        /*
+         * Checks if the event is empty.
+         */
         public bool IsEmptyEvent()
         {
             return Races.Count == 0;
         }
         
-        //adds a race to an event
+        /**
+         * Adds a race inside the race event.
+         */
         public bool AddRace(Race race)
         {
             if (Races.Contains(race) || IsFullEvent())
@@ -96,7 +113,9 @@
             return true;
         }
         
-        //removes race from the list of races
+        /**
+         * Removes a race from race event.
+         */
         public bool RemoveRace(Race race)
         {
             if (!Races.Contains(race) || IsEmptyEvent())
@@ -107,7 +126,9 @@
             return Races.Remove(race);
         }
 
-        //from link to a readable format
+        /**
+         * Displays data in nice formatted text.
+         */
         public override string ToString()
         {
             string eventDetails = $"{nameof(EventName)}: {EventName}, {nameof(Location)}: {Location}, {nameof(Races)}:";
