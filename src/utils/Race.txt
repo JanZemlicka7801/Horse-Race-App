@@ -1,0 +1,3 @@
+Name:MorningSprint,StartTime:08:00,HorsesIDs(ABC123456789,DEF987654321),AllowedHorses:5
+Name:MiddayDash,StartTime:12:30,HorsesIDs(GHI456789123),AllowedHorses:5
+Name:EveningRun,StartTime:17:00,HorsesIDs(ABC123456789,JKL852963741),AllowedHorses:5

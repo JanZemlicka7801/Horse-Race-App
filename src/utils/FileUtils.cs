@@ -1,4 +1,5 @@
 ﻿using Horse_Race_App.objects;
+using Horse_Race_App.people;
 
 namespace Horse_Race_App.utils
 {
@@ -13,6 +14,11 @@ namespace Horse_Race_App.utils
         private const string RaceEventFilePath =
             "C:\\Users\\lomze\\OneDrive - Dundalk Institute of Technology\\DkIT\\Web Frameworks\\Lab work\\Horse Race App\\src\\utils\\RaceEvent.txt";
 
+        /**
+         * Reads data from a text file line by line, split them and saves them as properties of the horse class.
+         * Then adds them inside the list of string, DateTime and another string. In the end the list of data from
+         * Horse.txt is outputted.
+         */
         private static List<(string HorseId, DateTime BirthDate, string HorseName)> ReadHorseData()
         {
             var rawHorseData = new List<(string, DateTime, string)>();
@@ -25,9 +31,10 @@ namespace Horse_Race_App.utils
                     continue;
                 }
 
-                string horseId = parts[0].Split(':')[1].Trim();
-                string birthDateString = parts[1].Split(':')[1].Trim();
-                string horseName = parts[2].Split(':')[1].Trim();
+                // Acceses the second element after trimming
+                var horseId = parts[0].Split(':')[1].Trim();
+                var birthDateString = parts[1].Split(':')[1].Trim();
+                var horseName = parts[2].Split(':')[1].Trim();
 
                 // resource: https://stackoverflow.com/questions/11999912/datetime-tryparseexact-rejecting-valid-formats
                 if (DateTime.TryParseExact(
@@ -40,20 +47,20 @@ namespace Horse_Race_App.utils
                         // won't display any additional adjustments like UTC
                         System.Globalization.DateTimeStyles.None, 
                         // if everything will pass then it will be stored inside the birthDate
-                        out DateTime birthDate))
+                        out var birthDate))
                 {
                     rawHorseData.Add((horseId, birthDate, horseName));
-                }
-                else
-                {
-                    continue;
                 }
             }
 
             return rawHorseData;
         }
         
-        public static List<Race> ReadRaces()
+        /*
+         * Read races from Race.txt, by separating those data the function then creates race objects and stores
+         * them inside a list. 
+         */
+        private static List<Race> ReadRaces()
         {
             var races = new List<Race>();
 
@@ -65,6 +72,7 @@ namespace Horse_Race_App.utils
 
                     if (parts.Length < 4)
                     {
+                        // Skips the loop.
                         continue;
                     }
 
@@ -75,9 +83,23 @@ namespace Horse_Race_App.utils
                         continue;
                     }
 
-                    var horseIDs = parts[2].Split('(')[1].TrimEnd(')').Split(',').Select(h => h.Trim()).ToList();
-                    List<Horse> allHorses = DataToHorses();
-                    var raceHorses = allHorses.Where(h => horseIDs.Contains(h.HorseId)).ToList();
+                    var horseIDsPart = parts[2].Split('(')[1].TrimEnd(')');
+                    var horseIDs = new List<string>();
+                    foreach (var id in horseIDsPart.Split(','))
+                    {
+                        horseIDs.Add(id.Trim());
+                    }
+
+                    var allHorses = DataToHorses();
+                    var raceHorses = new List<Horse>();
+
+                    foreach (var horse in allHorses)
+                    {
+                        if (horseIDs.Contains(horse.HorseId))
+                        {
+                            raceHorses.Add(horse);
+                        }
+                    }
 
                     if (!int.TryParse(parts[3].Split(':')[1], out int allowedHorses))
                     {
@@ -95,7 +117,10 @@ namespace Horse_Race_App.utils
             return races;
         }
 
-        
+        /*
+         * Reads all race events from a RaceEvent.txt and using splitting and trimming lines will extract data and parses them
+         * to correct data types, which will allow to create RaceEvent objects and store them inside a list.
+         */
         public static List<RaceEvents> ReadRaceEvents()
         {
             var raceEvents = new List<RaceEvents>();
@@ -111,8 +136,8 @@ namespace Horse_Race_App.utils
                         continue;
                     }
 
-                    string name = parts[0].Split(':')[1].Trim();
-                    string location = parts[1].Split(':')[1].Trim();
+                    var name = parts[0].Split(':')[1].Trim();
+                    var location = parts[1].Split(':')[1].Trim();
 
                     DateTime date;
                     if (!DateTime.TryParse(parts[2].Split(':')[1], out date))
@@ -120,16 +145,30 @@ namespace Horse_Race_App.utils
                         continue;
                     }
 
-                    var raceNames = parts[3].Split('(')[1].TrimEnd(')').Split(',').Select(r => r.Trim()).ToList();
+                    var raceNamesString = parts[3].Split('(')[1].TrimEnd(')');
+                    var raceNames = new List<string>();
+                    foreach (var raceName in raceNamesString.Split(','))
+                    {
+                        raceNames.Add(raceName.Trim());
+                    }
 
-                    string numberOfRacesStr = parts[4].Split(':')[1].Trim('(', ')');
-                    if (!int.TryParse(numberOfRacesStr, out int numberOfRaces))
+                    var numberOfRacesString = parts[4].Split(':')[1].Trim('(', ')');
+                    int numberOfRaces;
+                    if (!int.TryParse(numberOfRacesString, out numberOfRaces))
                     {
                         continue;
                     }
 
-                    List<Race> listOfRaces = ReadRaces();
-                    var eventRaces = listOfRaces.Where(r => raceNames.Contains(r.Name)).ToList();
+                    var listOfRaces = ReadRaces();
+                    var eventRaces = new List<Race>();
+
+                    foreach (var race in listOfRaces)
+                    {
+                        if (raceNames.Contains(race.Name))
+                        {
+                            eventRaces.Add(race);
+                        }
+                    }
 
                     raceEvents.Add(new RaceEvents(name, location, date, eventRaces, numberOfRaces));
                 }
@@ -142,6 +181,9 @@ namespace Horse_Race_App.utils
             return raceEvents;
         }
         
+        /*
+         * Retrieves past race events from RaceEvents.txt and stores them inside a list.
+         */
         public static List<RaceEvents> GetPastRaceEventsList()
         {
             var pastEvents = new List<RaceEvents>();
@@ -158,6 +200,9 @@ namespace Horse_Race_App.utils
             return pastEvents;
         }
 
+        /*
+         * From provided list of Race Events it will filter races assigned to the race event.
+         */
         public static List<Race> GetAllRacesFromListOfEvents(List<RaceEvents> raceEvents)
         {
             var allRaces = new List<Race>();
@@ -173,6 +218,9 @@ namespace Horse_Race_App.utils
             return allRaces;
         }
         
+        /*
+         * Transforms a list of raw data from Horse.txt to objects Horse, with assigned true to skip validation.
+         */
         public static List<Horse> DataToHorses()
         {
             var horses = new List<Horse>();
@@ -185,13 +233,19 @@ namespace Horse_Race_App.utils
             return horses;
         }
         
+        /*
         public static void DeleteHorse(string horseId)
         {
             var remainingHorses = File.ReadLines(HorseFilePath).Where(line => !line.Contains(horseId)).ToList();
             
             File.WriteAllLines(HorseFilePath,remainingHorses);
         }
+        */
         
+        /**
+         * Compares stored race events to a list of race events for deletion and just rewrite the text file without
+         * those assigned for deletion.
+         */
         public static void DeleteRaceEventsFromFile(List<RaceEvents> eventsToDelete)
         {
             var allEvents = File.ReadAllLines(RaceEventFilePath).ToList();
@@ -220,6 +274,10 @@ namespace Horse_Race_App.utils
             File.WriteAllLines(RaceEventFilePath, remainingEvents);
         }
         
+        /**
+         * Compares stored races to a list of races for deletion and just rewrite the text file without
+         * those assigned for deletion.
+         */
         public static void DeleteRacesFromFile(List<Race> racesToDelete)
         {
             var allRaces = File.ReadAllLines(RaceFilePath).ToList();
@@ -253,28 +311,51 @@ namespace Horse_Race_App.utils
             File.WriteAllLines(RaceFilePath, remainingRaces);
         }
         
+        /**
+ * Writes a passed race event into RaceEvent.txt using a stream writer.
+ */
         public static void WriteNewRaceEvent(RaceEvents raceEvent)
         {
-            using (StreamWriter writer = new StreamWriter(RaceEventFilePath))
+            // Use append: true to avoid overwriting
+            using (StreamWriter writer = new StreamWriter(RaceEventFilePath, append: true)) 
             {
-                string raceNames = string.Join(",", raceEvent.Races.Select(r => r.Name));
-                string eventLine = $"Name:{raceEvent.EventName},Location:{raceEvent.Location},StartDate:{raceEvent.StartDate:MM/dd/yyyy},Races:({raceNames}),NumberOfRaces:({raceEvent.NumberOfRaces})";
-                
+                var raceNames = new List<string>();
+                foreach (var race in raceEvent.Races)
+                {
+                    raceNames.Add(race.Name);
+                }
+        
+                string raceNamesString = string.Join(",", raceNames);
+                string eventLine = $"Name:{raceEvent.EventName},Location:{raceEvent.Location},StartDate:{raceEvent.StartDate:MM/dd/yyyy},Races:({raceNamesString}),NumberOfRaces:({raceEvent.NumberOfRaces})";
+
                 writer.WriteLine(eventLine);
             }
         }
 
-        public static void WriteNewRace(Race race)
+        /**
+         * Writes a passed race into Race.txt using a stream writer.
+         */
+        private static void WriteNewRace(Race race)
         {
-            using (StreamWriter writer = new StreamWriter(RaceFilePath))
+            // Use append: true to avoid overwriting
+            using (StreamWriter writer = new StreamWriter(RaceFilePath, append: true)) 
             {
-                string horseNames = string.Join(",", race.Horses.Select(r => r.HorseName));
-                string raceLine = $"Name:{race.Name},StartTime:{race.StartTime},HorsesIDs({horseNames}),AllowedHorses:{race.AllowedHorses}";
-                
+                var horseNames = new List<string>();
+                foreach (var horse in race.Horses)
+                {
+                    horseNames.Add(horse.HorseName);
+                }
+
+                string horseNamesString = string.Join(",", horseNames);
+                string raceLine = $"Name:{race.Name},StartTime:{race.StartTime},HorsesIDs({horseNamesString}),AllowedHorses:{race.AllowedHorses}";
+
                 writer.WriteLine(raceLine);
             }
         }
 
+        /**
+         * Writes a passed horse into Horse.txt using a stream writer.
+         */
         public static void WriteNewHorse(Horse horse)
         {
             using (StreamWriter writer = new StreamWriter(HorseFilePath, append: true))
@@ -284,14 +365,9 @@ namespace Horse_Race_App.utils
             }
         }
 
-        public static void WriteWholeNewHorses(List<Horse> list)
-        {
-            foreach (var horse in list)
-            {
-                WriteNewHorse(horse);
-            }
-        }
-
+        /**
+         * Writes races from a list to text file.
+         */
         public static void WriteWholeNewRaces(List<Race> list)
         {
             foreach (var race in list)
@@ -300,6 +376,9 @@ namespace Horse_Race_App.utils
             }
         }
 
+        /**
+         * Writes race events from a list to text file.
+         */
         public static void WriteWholeNewEventRaces(List<RaceEvents> list)
         {
             foreach (var raceEvent in list)

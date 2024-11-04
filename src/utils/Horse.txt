@@ -1,3 +1,4 @@
-HorseId:ABC123456789,BirthDate:10/28/2020,HorseName:Lojza
-HorseId:JAN174852963,BirthDate:07/08/2021,HorseName:Joe
-HorseId:KAT152698743,BirthDate:09/10/2021,HorseName:Kate
+HorseId:ABC123456789,BirthDate:10/28/2020,HorseName:Flash
+HorseId:DEF987654321,BirthDate:05/15/2019,HorseName:Thunder
+HorseId:GHI456789123,BirthDate:07/08/2021,HorseName:Storm
+HorseId:JKL852963741,BirthDate:03/12/2018,HorseName:Blaze
